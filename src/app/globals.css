@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === Level card glow animations === */
+@keyframes glow-easy {
+  0%, 100% { box-shadow: 0 0 0 1px rgb(52 211 153 / 0.12); }
+  50%       { box-shadow: 0 0 0 1.5px rgb(52 211 153 / 0.38), 0 0 20px rgb(52 211 153 / 0.06); }
+}
+@keyframes glow-medium {
+  0%, 100% { box-shadow: 0 0 0 1px rgb(251 191 36 / 0.12); }
+  50%       { box-shadow: 0 0 0 1.5px rgb(251 191 36 / 0.38), 0 0 20px rgb(251 191 36 / 0.06); }
+}
+@keyframes glow-hard {
+  0%, 100% { box-shadow: 0 0 0 1px rgb(251 146 60 / 0.12); }
+  50%       { box-shadow: 0 0 0 1.5px rgb(251 146 60 / 0.38), 0 0 20px rgb(251 146 60 / 0.06); }
+}
+@keyframes glow-super {
+  0%, 100% { box-shadow: 0 0 0 1px rgb(192 132 252 / 0.12); }
+  50%       { box-shadow: 0 0 0 1.5px rgb(192 132 252 / 0.38), 0 0 20px rgb(192 132 252 / 0.06); }
+}
+@keyframes rank1-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(234 179 8 / 0); }
+  50%       { box-shadow: 0 0 0 4px rgb(234 179 8 / 0.1), 0 0 28px rgb(234 179 8 / 0.06); }
+}
+@keyframes trophy-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-4px); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* === Underground blob drift animations === */
+@keyframes blob-1 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33%       { transform: translate(45px, -55px) scale(1.08); }
+  66%       { transform: translate(-30px, 38px) scale(0.93); }
+}
+@keyframes blob-2 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33%       { transform: translate(-50px, 42px) scale(0.95); }
+  66%       { transform: translate(32px, -38px) scale(1.06); }
+}
+@keyframes blob-3 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  50%       { transform: translate(38px, 48px) scale(1.09); }
+}
+@keyframes blob-4 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  40%       { transform: translate(-42px, -35px) scale(0.91); }
+  80%       { transform: translate(28px, 22px) scale(1.05); }
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    /* Deep earth canvas — shown wherever page content is transparent */
+    background-color: #0c0a07;
+  }
+
+  body {
+    @apply text-white antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #161411;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #2e2a25;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3d3830;
+  }
+}
+
+@layer utilities {
+  .card {
+    @apply bg-gray-900 border border-gray-800 rounded-xl;
+  }
+
+  .btn-primary {
+    @apply bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-success {
+    @apply bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-500 active:bg-red-700 text-white font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-gray-300 font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+}
