@@ -144,6 +144,7 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
                 const u = updated.find(up => up.id === s.id)
                 return u ?? s
               }))}
+              onProblemUpdated={(updated) => setProblems(prev => prev.map(p => p.id === updated.id ? updated : p))}
             />
           )}
           {activeTab === 'all-problems' && (

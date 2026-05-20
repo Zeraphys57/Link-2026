@@ -1,16 +1,18 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { ClipboardCheck, ClipboardList, Clock, CheckCircle2, XCircle, Hourglass, PlayCircle } from 'lucide-react'
+import { ClipboardCheck, ClipboardList, Clock, CheckCircle2, XCircle, Hourglass, PlayCircle, Pencil } from 'lucide-react'
 import type { Problem, Submission } from '@/lib/types'
 import LevelBadge from '@/components/ui/LevelBadge'
 import Stopwatch, { formatDuration } from '@/components/ui/Stopwatch'
 import GradeModal from './GradeModal'
+import EditProblemModal from './EditProblemModal'
 
 interface Props {
   problems: Problem[]
   submissions: Submission[]
   onSubmissionsChange: (updated: Submission[]) => void
+  onProblemUpdated: (problem: Problem) => void
 }
 
 type SubmissionState = 'in_progress' | 'awaiting_grade' | 'accepted' | 'rejected'
@@ -22,8 +24,9 @@ function stateOf(s: Submission): SubmissionState {
   return 'in_progress'
 }
 
-export default function MyProblems({ problems, submissions, onSubmissionsChange }: Props) {
+export default function MyProblems({ problems, submissions, onSubmissionsChange, onProblemUpdated }: Props) {
   const [gradeTarget, setGradeTarget] = useState<{ problem: Problem; submission: Submission } | null>(null)
+  const [editTarget, setEditTarget] = useState<Problem | null>(null)
 
   // Group submissions by problem.
   const subsByProblem = useMemo(() => {
@@ -98,8 +101,17 @@ export default function MyProblems({ problems, submissions, onSubmissionsChange 
                 </div>
                 <h3 className="font-semibold text-white leading-snug">{problem.title}</h3>
               </div>
-              <div className="text-xs text-gray-600 flex-shrink-0">
-                {subs.length === 0 ? 'belum diambil tim' : `${subs.length} submission`}
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <span className="text-xs text-gray-600">
+                  {subs.length === 0 ? 'belum diambil tim' : `${subs.length} submission`}
+                </span>
+                <button
+                  onClick={() => setEditTarget(problem)}
+                  className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-amber-300 bg-gray-800 hover:bg-gray-700 px-2.5 py-1.5 rounded-lg transition-colors"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  Edit
+                </button>
               </div>
             </div>
 
@@ -127,6 +139,18 @@ export default function MyProblems({ problems, submissions, onSubmissionsChange 
           onGraded={(updatedSubmission) => {
             onSubmissionsChange([updatedSubmission])
             setGradeTarget(null)
+          }}
+        />
+      )}
+
+      {editTarget && (
+        <EditProblemModal
+          problem={editTarget}
+          hasSubmissions={(subsByProblem.get(editTarget.id)?.length ?? 0) > 0}
+          onClose={() => setEditTarget(null)}
+          onUpdated={(updated) => {
+            onProblemUpdated(updated)
+            setEditTarget(null)
           }}
         />
       )}
