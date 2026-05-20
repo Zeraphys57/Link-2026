@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm'
 import { CheckCircle2, AlertTriangle, Terminal } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Problem, Submission } from '@/lib/types'
+import { CHALLENGE_DURATION_SECONDS } from '@/lib/types'
 import Modal from '@/components/ui/Modal'
 import LevelBadge from '@/components/ui/LevelBadge'
 import Stopwatch from '@/components/ui/Stopwatch'
@@ -23,8 +24,16 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
   const [loading, setLoading] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [timeUp, setTimeUp] = useState(false)
+
+  const isChallenge = problem.level === 'super'
 
   const handleSubmit = async () => {
+    if (isChallenge && timeUp) {
+      toast.error('Waktu sudah habis. Soal Challenge tidak bisa dikumpulkan lagi.')
+      return
+    }
+
     if (!answer.trim()) {
       toast.error('Tulis jawabanmu dulu sebelum mengumpulkan.')
       return
@@ -97,14 +106,31 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
               {problem.points} poin
             </span>
           </div>
-          <div className="flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-4 py-2 rounded-xl">
-            <span className="text-xs text-blue-400 font-medium">Waktu Berjalan</span>
-            <Stopwatch
-              startTime={submission.started_at}
-              className="text-blue-300 text-lg font-bold tabular-nums"
-              showIcon={false}
-            />
-          </div>
+          {isChallenge ? (
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${
+              timeUp ? 'bg-red-500/10 border-red-500/30' : 'bg-blue-500/10 border-blue-500/20'
+            }`}>
+              <span className={`text-xs font-medium ${timeUp ? 'text-red-400' : 'text-blue-400'}`}>
+                {timeUp ? 'Waktu Habis' : 'Sisa Waktu'}
+              </span>
+              <Stopwatch
+                startTime={submission.started_at}
+                countdownFrom={CHALLENGE_DURATION_SECONDS}
+                onExpire={() => setTimeUp(true)}
+                className="text-lg font-bold tabular-nums"
+                showIcon={false}
+              />
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-4 py-2 rounded-xl">
+              <span className="text-xs text-blue-400 font-medium">Waktu Berjalan</span>
+              <Stopwatch
+                startTime={submission.started_at}
+                className="text-blue-300 text-lg font-bold tabular-nums"
+                showIcon={false}
+              />
+            </div>
+          )}
         </div>
 
         {/* Problem description */}
@@ -129,14 +155,27 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
             value={answer}
             onChange={e => setAnswer(e.target.value)}
             placeholder="Tulis output atau solusi kamu di sini..."
-            className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono text-sm resize-y transition-colors"
+            className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono text-sm resize-y transition-colors disabled:opacity-60"
             rows={6}
-            disabled={loading}
+            disabled={loading || (isChallenge && timeUp)}
           />
         </div>
 
+        {/* Time-up notice (Challenge only) */}
+        {isChallenge && timeUp && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-red-300">Waktu Habis</p>
+              <p className="text-sm text-red-400/80 mt-1">
+                Batas waktu 30 menit untuk soal Challenge ini sudah berakhir. Jawaban tidak bisa dikumpulkan lagi.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Confirm notice */}
-        {confirming && (
+        {confirming && !(isChallenge && timeUp) && (
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
@@ -168,11 +207,17 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
           )}
           <button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || (isChallenge && timeUp)}
             className="btn-success flex items-center gap-2 px-6 active:scale-[0.98]"
           >
             <CheckCircle2 className="w-4 h-4" />
-            {loading ? 'Mengumpulkan...' : confirming ? 'Ya, Kumpulkan!' : 'Selesai'}
+            {isChallenge && timeUp
+              ? 'Waktu Habis'
+              : loading
+              ? 'Mengumpulkan...'
+              : confirming
+              ? 'Ya, Kumpulkan!'
+              : 'Selesai'}
           </button>
         </div>
       </div>

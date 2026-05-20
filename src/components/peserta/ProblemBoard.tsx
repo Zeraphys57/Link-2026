@@ -21,19 +21,19 @@ const LEVEL_LABELS: Record<Level, string> = {
   easy: 'Easy',
   medium: 'Medium',
   hard: 'Hard',
-  super: 'Super',
+  super: 'Challenge',
 }
 const LEVEL_COLORS: Record<Level, string> = {
   easy: 'text-emerald-400',
-  medium: 'text-amber-400',
-  hard: 'text-orange-400',
-  super: 'text-purple-400',
+  medium: 'text-orange-400',
+  hard: 'text-purple-400',
+  super: 'text-blue-400',
 }
 const LEVEL_DIVIDER: Record<Level, string> = {
   easy: 'bg-emerald-500/15',
-  medium: 'bg-amber-500/15',
-  hard: 'bg-orange-500/15',
-  super: 'bg-purple-500/15',
+  medium: 'bg-orange-500/15',
+  hard: 'bg-purple-500/15',
+  super: 'bg-blue-500/15',
 }
 const LEVEL_ICONS = {
   easy: Leaf,

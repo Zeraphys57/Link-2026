@@ -61,12 +61,15 @@ export const LEVEL_POINTS: Record<Level, number> = {
   easy: 100,
   medium: 250,
   hard: 500,
-  super: 1000,
+  super: 50,
 }
 
 export const LEVEL_LABELS: Record<Level, string> = {
   easy: 'Easy',
   medium: 'Medium',
   hard: 'Hard',
-  super: 'Super',
+  super: 'Challenge',
 }
+
+// Soal Challenge (level 'super') punya batas waktu mundur 30 menit sejak diambil.
+export const CHALLENGE_DURATION_SECONDS = 30 * 60

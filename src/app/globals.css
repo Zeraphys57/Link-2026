@@ -8,16 +8,16 @@
   50%       { box-shadow: 0 0 0 1.5px rgb(52 211 153 / 0.38), 0 0 20px rgb(52 211 153 / 0.06); }
 }
 @keyframes glow-medium {
-  0%, 100% { box-shadow: 0 0 0 1px rgb(251 191 36 / 0.12); }
-  50%       { box-shadow: 0 0 0 1.5px rgb(251 191 36 / 0.38), 0 0 20px rgb(251 191 36 / 0.06); }
-}
-@keyframes glow-hard {
   0%, 100% { box-shadow: 0 0 0 1px rgb(251 146 60 / 0.12); }
   50%       { box-shadow: 0 0 0 1.5px rgb(251 146 60 / 0.38), 0 0 20px rgb(251 146 60 / 0.06); }
 }
-@keyframes glow-super {
+@keyframes glow-hard {
   0%, 100% { box-shadow: 0 0 0 1px rgb(192 132 252 / 0.12); }
   50%       { box-shadow: 0 0 0 1.5px rgb(192 132 252 / 0.38), 0 0 20px rgb(192 132 252 / 0.06); }
+}
+@keyframes glow-super {
+  0%, 100% { box-shadow: 0 0 0 1px rgb(96 165 250 / 0.12); }
+  50%       { box-shadow: 0 0 0 1.5px rgb(96 165 250 / 0.38), 0 0 20px rgb(96 165 250 / 0.06); }
 }
 @keyframes rank1-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgb(234 179 8 / 0); }

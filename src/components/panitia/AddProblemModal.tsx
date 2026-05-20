@@ -10,9 +10,9 @@ import toast from 'react-hot-toast'
 
 const LEVEL_SELECTED: Record<Level, string> = {
   easy:   'bg-emerald-500/15 border-emerald-500/50 text-emerald-300 shadow-emerald-500/10 shadow-md',
-  medium: 'bg-amber-500/15 border-amber-500/50 text-amber-300 shadow-amber-500/10 shadow-md',
-  hard:   'bg-orange-500/15 border-orange-500/50 text-orange-300 shadow-orange-500/10 shadow-md',
-  super:  'bg-purple-500/15 border-purple-500/50 text-purple-300 shadow-purple-500/10 shadow-md',
+  medium: 'bg-orange-500/15 border-orange-500/50 text-orange-300 shadow-orange-500/10 shadow-md',
+  hard:   'bg-purple-500/15 border-purple-500/50 text-purple-300 shadow-purple-500/10 shadow-md',
+  super:  'bg-blue-500/15 border-blue-500/50 text-blue-300 shadow-blue-500/10 shadow-md',
 }
 
 interface Props {

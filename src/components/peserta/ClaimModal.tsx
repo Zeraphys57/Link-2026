@@ -124,9 +124,18 @@ export default function ClaimModal({ problem, profile, onClose, onClaimed }: Pro
         {/* Claim warning */}
         <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
           <p className="text-sm text-amber-300">
-            <strong>Perhatian:</strong> Setelah diambil, soal ini tidak bisa diambil tim lain. Timer langsung berjalan. Maksimal 2 soal aktif per tim — selesaikan atau tunggu penilaian dulu sebelum ambil soal ketiga.
+            <strong>Perhatian:</strong> Setelah diambil, timer langsung berjalan. Maksimal 2 soal aktif per tim — selesaikan atau tunggu penilaian dulu sebelum ambil soal ketiga.
           </p>
         </div>
+
+        {/* Challenge-specific warning */}
+        {problem.level === 'super' && (
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+            <p className="text-sm text-blue-300">
+              <strong>Soal Challenge:</strong> Kamu hanya punya <strong>30 menit</strong> sejak soal diambil. Timer berjalan mundur — kalau waktu habis, jawaban tidak bisa dikumpulkan lagi.
+            </p>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="flex gap-3 justify-end">

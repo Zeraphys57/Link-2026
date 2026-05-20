@@ -1,7 +1,8 @@
 'use client'
 
 import { CheckCircle, Clock, RotateCcw, Users } from 'lucide-react'
-import type { Profile, Problem, Submission } from '@/lib/types'
+import type { Profile, Problem, Submission, Level } from '@/lib/types'
+import { CHALLENGE_DURATION_SECONDS } from '@/lib/types'
 import LevelBadge, {
   levelBorderClass,
   levelRingClass,
@@ -87,14 +88,14 @@ export default function ProblemCard({ problem, profile, mySubmission, acceptedBy
 
         {/* Status row */}
         <div className="pt-2 border-t border-gray-800/80">
-          <StatusRow state={state} onWork={onWork} />
+          <StatusRow state={state} onWork={onWork} level={problem.level} />
         </div>
       </div>
     </div>
   )
 }
 
-function StatusRow({ state, onWork }: { state: CardState; onWork: () => void }) {
+function StatusRow({ state, onWork, level }: { state: CardState; onWork: () => void; level: Level }) {
   if (state.kind === 'available') {
     return (
       <div className="flex items-center justify-between">
@@ -127,7 +128,11 @@ function StatusRow({ state, onWork }: { state: CardState; onWork: () => void }) 
           <span className="text-xs text-blue-400 font-medium">
             {state.isMyUser ? 'Soal kamu' : 'Tim kamu sedang mengerjakan'}
           </span>
-          <Stopwatch startTime={state.submission.started_at} className="text-xs text-gray-400 tabular-nums" />
+          <Stopwatch
+            startTime={state.submission.started_at}
+            countdownFrom={level === 'super' ? CHALLENGE_DURATION_SECONDS : undefined}
+            className={level === 'super' ? 'text-xs tabular-nums' : 'text-xs text-gray-400 tabular-nums'}
+          />
         </div>
         {state.isMyUser && (
           <button
