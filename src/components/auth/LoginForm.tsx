@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, LogIn } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
@@ -16,6 +16,24 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
+  useEffect(() => {
+    toast(
+      (
+        <div className="text-sm leading-relaxed">
+          <p className="font-semibold text-amber-300 mb-1">Panduan Login Peserta</p>
+          <p>
+            <span className="text-gray-400">Username:</span> nama tim kamu
+          </p>
+          <p>
+            <span className="text-gray-400">Password:</span> 5 digit terakhir NPM
+            anggota 1 + 5 digit terakhir NPM anggota 2
+          </p>
+        </div>
+      ),
+      { id: 'login-help', duration: 12000, icon: 'ℹ️' }
+    )
+  }, [])
+
   const handleModeSwitch = (newMode: LoginMode) => {
     setMode(newMode)
     setIdentifier('')
@@ -28,7 +46,7 @@ export default function LoginForm() {
     const supabase = createClient()
 
     const email = mode === 'tim'
-      ? `${identifier.toLowerCase().replace(/\s+/g, '')}@link2026.team`
+      ? `${identifier.toLowerCase().replace(/[^a-z0-9]/g, '')}@link2026.team`
       : identifier
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
