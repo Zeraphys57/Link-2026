@@ -67,6 +67,7 @@ export default function LoginForm() {
       .eq('id', data.user.id)
       .single()
 
+    toast.dismiss('login-help')
     toast.success(`Selamat datang, ${profile?.display_name ?? 'User'}!`)
     router.push(profile?.role === 'panitia' ? '/panitia' : '/peserta')
     router.refresh()
