@@ -124,6 +124,10 @@ export default function ProblemBoard({ problems, submissions, profile, challenge
         <ClaimModal
           problem={claimTarget}
           profile={profile}
+          lockedChallenge={
+            claimTarget.level === 'super' &&
+            myLatestByProblem.get(claimTarget.id) != null
+          }
           onClose={() => setClaimTarget(null)}
           onClaimed={(newSubmission) => {
             onSubmissionsChange([newSubmission, ...submissions])

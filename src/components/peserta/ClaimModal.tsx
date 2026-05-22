@@ -13,11 +13,14 @@ import toast from 'react-hot-toast'
 interface Props {
   problem: Problem
   profile: Profile
+  // true = soal Challenge yang sudah pernah dicoba tim ini. Modal tetap bisa
+  // dibuka untuk membaca soal, tapi tombol "Ambil Soal" dinonaktifkan.
+  lockedChallenge?: boolean
   onClose: () => void
   onClaimed: (submission: Submission) => void
 }
 
-export default function ClaimModal({ problem, profile, onClose, onClaimed }: Props) {
+export default function ClaimModal({ problem, profile, lockedChallenge = false, onClose, onClaimed }: Props) {
   const [loading, setLoading] = useState(false)
 
   const handleClaim = async () => {
@@ -77,6 +80,15 @@ export default function ClaimModal({ problem, profile, onClose, onClaimed }: Pro
       return
     }
 
+    // Soal Challenge hanya boleh diambil SEKALI per tim — sekali dicoba (walau
+    // ditolak) tidak bisa diklaim ulang. Beda dengan soal Final yang boleh retry.
+    if (problem.level === 'super' && (existing?.length ?? 0) > 0) {
+      toast.error('Soal Challenge hanya bisa diambil satu kali — tim kamu sudah pernah mencoba.')
+      setLoading(false)
+      onClose()
+      return
+    }
+
     const now = new Date().toISOString()
 
     const { data: submission, error: subError } = await supabase
@@ -121,34 +133,45 @@ export default function ClaimModal({ problem, profile, onClose, onClaimed }: Pro
           </div>
         </div>
 
-        {/* Claim warning */}
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
-          <p className="text-sm text-amber-300">
-            <strong>Perhatian:</strong> Setelah diambil, timer langsung berjalan. Maksimal 2 soal aktif per tim — selesaikan atau tunggu penilaian dulu sebelum ambil soal ketiga.
-          </p>
-        </div>
-
-        {/* Challenge-specific warning */}
-        {problem.level === 'super' && (
-          <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
-            <p className="text-sm text-blue-300">
-              <strong>Soal Challenge:</strong> Kamu hanya punya <strong>30 menit</strong> sejak soal diambil. Timer berjalan mundur — kalau waktu habis, jawaban tidak bisa dikumpulkan lagi.
+        {lockedChallenge ? (
+          /* Soal Challenge yang sudah pernah dicoba — hanya bisa dibaca */
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+            <p className="text-sm text-red-300">
+              <strong>Soal Challenge sudah dicoba:</strong> Soal Challenge hanya bisa diambil <strong>satu kali</strong>. Tim kamu sudah pernah mengambil soal ini, jadi tidak bisa diambil lagi — kamu tetap bisa membaca soalnya di sini.
             </p>
           </div>
+        ) : (
+          <>
+            {/* Claim warning */}
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
+              <p className="text-sm text-amber-300">
+                <strong>Perhatian:</strong> Setelah diambil, timer langsung berjalan. Maksimal 2 soal aktif per tim — selesaikan atau tunggu penilaian dulu sebelum ambil soal ketiga.
+              </p>
+            </div>
+
+            {/* Challenge-specific warning */}
+            {problem.level === 'super' && (
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+                <p className="text-sm text-blue-300">
+                  <strong>Soal Challenge:</strong> Kamu hanya punya <strong>30 menit</strong> sejak soal diambil. Timer berjalan mundur — kalau waktu habis, jawaban tidak bisa dikumpulkan lagi.
+                </p>
+              </div>
+            )}
+          </>
         )}
 
         {/* Footer */}
         <div className="flex gap-3 justify-end">
           <button onClick={onClose} className="btn-ghost">
-            Batal
+            {lockedChallenge ? 'Tutup' : 'Batal'}
           </button>
           <button
             onClick={handleClaim}
-            disabled={loading}
-            className="btn-primary flex items-center gap-2"
+            disabled={loading || lockedChallenge}
+            className="btn-primary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Zap className="w-4 h-4" />
-            {loading ? 'Mengambil...' : 'Ambil Soal'}
+            {lockedChallenge ? 'Tidak bisa diambil lagi' : loading ? 'Mengambil...' : 'Ambil Soal'}
           </button>
         </div>
       </div>

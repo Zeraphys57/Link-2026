@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckCircle, Clock, RotateCcw, Users } from 'lucide-react'
+import { CheckCircle, Clock, Lock, RotateCcw, Users } from 'lucide-react'
 import type { Profile, Problem, Submission, Level } from '@/lib/types'
 import { CHALLENGE_DURATION_SECONDS } from '@/lib/types'
 import LevelBadge, {
@@ -38,6 +38,10 @@ export default function ProblemCard({ problem, profile, mySubmission, acceptedBy
   const state = deriveState(mySubmission, profile.id)
 
   const isAvailable = state.kind === 'available'
+  // Soal Challenge yang sudah pernah dicoba: kartu tetap bisa diklik untuk
+  // dibaca, tapi tidak bisa diklaim lagi (tanpa animasi "tersedia").
+  const challengeLocked =
+    state.kind === 'available' && state.previouslyRejected && problem.level === 'super'
   const isAccepted = state.kind === 'accepted'
   const isAwaiting = state.kind === 'awaiting_grade'
 
@@ -60,7 +64,7 @@ export default function ProblemCard({ problem, profile, mySubmission, acceptedBy
       className={`relative ${bgClass} border ${baseBorder} ${ringClass} rounded-xl overflow-hidden transition-all duration-250 ${
         isAvailable ? `cursor-pointer hover:scale-[1.02] ${LEVEL_HOVER_CLASS[problem.level]}` : ''
       }`}
-      style={isAvailable ? { animation: levelAvailableAnimation(problem.level) } : undefined}
+      style={isAvailable && !challengeLocked ? { animation: levelAvailableAnimation(problem.level) } : undefined}
       onClick={isAvailable ? onClaim : undefined}
     >
       <div className="p-4 space-y-3">
@@ -97,14 +101,22 @@ export default function ProblemCard({ problem, profile, mySubmission, acceptedBy
 
 function StatusRow({ state, onWork, level }: { state: CardState; onWork: () => void; level: Level }) {
   if (state.kind === 'available') {
+    const challengeLocked = level === 'super' && state.previouslyRejected
     return (
       <div className="flex items-center justify-between">
         <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${
-          state.previouslyRejected
+          challengeLocked
+            ? 'text-gray-400 bg-gray-500/10 border-gray-500/25'
+            : state.previouslyRejected
             ? 'text-orange-300 bg-orange-500/10 border-orange-500/25'
             : 'text-emerald-300 bg-emerald-500/10 border-emerald-500/20'
         }`}>
-          {state.previouslyRejected ? (
+          {challengeLocked ? (
+            <>
+              <Lock className="w-3 h-3" />
+              Sudah dicoba
+            </>
+          ) : state.previouslyRejected ? (
             <>
               <RotateCcw className="w-3 h-3" />
               Coba lagi
@@ -116,7 +128,9 @@ function StatusRow({ state, onWork, level }: { state: CardState; onWork: () => v
             </>
           )}
         </span>
-        <span className="text-xs text-gray-700">klik untuk ambil</span>
+        <span className="text-xs text-gray-700">
+          {challengeLocked ? 'klik untuk baca' : 'klik untuk ambil'}
+        </span>
       </div>
     )
   }
