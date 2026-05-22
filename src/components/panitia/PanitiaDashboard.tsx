@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { LogOut, ClipboardList, LayoutList, PlusCircle, Eye, EyeOff } from 'lucide-react'
+import { LogOut, ClipboardList, LayoutList, PlusCircle, Eye, EyeOff, Trophy } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile, Problem, Submission } from '@/lib/types'
 import MyProblems from './MyProblems'
 import AllProblems from './AllProblems'
 import AddProblemModal from './AddProblemModal'
+import Leaderboard from '@/components/peserta/Leaderboard'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import { useIdleLogout } from '@/lib/useIdleLogout'
@@ -20,7 +21,7 @@ interface Props {
   initialChallengeOnly: boolean
 }
 
-type Tab = 'my-problems' | 'all-problems' | 'add-problem'
+type Tab = 'my-problems' | 'all-problems' | 'leaderboard' | 'add-problem'
 
 export default function PanitiaDashboard({ profile, initialProblems, initialSubmissions, isAdmin, initialChallengeOnly }: Props) {
   const [problems, setProblems] = useState<Problem[]>(initialProblems)
@@ -182,6 +183,12 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
               label="Semua Soal"
             />
             <TabButton
+              active={activeTab === 'leaderboard'}
+              onClick={() => setActiveTab('leaderboard')}
+              icon={<Trophy className="w-4 h-4" />}
+              label="Papan Skor"
+            />
+            <TabButton
               active={activeTab === 'add-problem'}
               onClick={() => setActiveTab('add-problem')}
               icon={<PlusCircle className="w-4 h-4" />}
@@ -208,6 +215,9 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
           )}
           {activeTab === 'all-problems' && (
             <AllProblems problems={problems} submissions={submissions} />
+          )}
+          {activeTab === 'leaderboard' && (
+            <Leaderboard problems={problems} submissions={submissions} />
           )}
           {activeTab === 'add-problem' && (
             <AddProblemModal
