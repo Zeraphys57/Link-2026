@@ -10,6 +10,7 @@ import AllProblems from './AllProblems'
 import AddProblemModal from './AddProblemModal'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
+import { useIdleLogout } from '@/lib/useIdleLogout'
 
 interface Props {
   profile: Profile
@@ -30,6 +31,8 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
   const [togglingChallenge, setTogglingChallenge] = useState(false)
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
+
+  useIdleLogout()
 
   const handleProblemChange = useCallback((payload: { eventType: string; new: Record<string, unknown> }) => {
     if (payload.eventType === 'UPDATE') {

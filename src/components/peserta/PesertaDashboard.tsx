@@ -9,6 +9,7 @@ import ProblemBoard from './ProblemBoard'
 import Leaderboard from './Leaderboard'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
+import { useIdleLogout } from '@/lib/useIdleLogout'
 
 interface Props {
   profile: Profile
@@ -27,6 +28,8 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
   const [loggingOut, setLoggingOut] = useState(false)
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
+
+  useIdleLogout()
 
   const handleProblemChange = useCallback((payload: { eventType: string; new: Record<string, unknown>; old: Record<string, unknown> }) => {
     if (payload.eventType === 'UPDATE') {
