@@ -11,11 +11,23 @@ interface Props {
 
 function computeLeaderboard(submissions: Submission[], problems: Problem[]): LeaderboardEntry[] {
   const problemMap = new Map(problems.map(p => [p.id, p]))
-  const teamMap = new Map<string, LeaderboardEntry>()
 
+  // Dedup: satu tim hanya dihitung SEKALI per soal, walau ada beberapa
+  // submission accepted untuk soal yang sama (akibat klaim ulang atau "Cek
+  // Ulang" panitia). Diambil submission accepted dengan durasi tercepat.
+  const bestByTeamProblem = new Map<string, Submission>()
   for (const sub of submissions) {
     if (sub.verdict !== 'accepted' || !sub.points_awarded) continue
+    const key = `${sub.team_name} ${sub.problem_id}`
+    const existing = bestByTeamProblem.get(key)
+    if (!existing || (sub.duration_seconds ?? Infinity) < (existing.duration_seconds ?? Infinity)) {
+      bestByTeamProblem.set(key, sub)
+    }
+  }
 
+  const teamMap = new Map<string, LeaderboardEntry>()
+
+  for (const sub of bestByTeamProblem.values()) {
     if (!teamMap.has(sub.team_name)) {
       teamMap.set(sub.team_name, {
         team_name: sub.team_name,
@@ -27,13 +39,13 @@ function computeLeaderboard(submissions: Submission[], problems: Problem[]): Lea
     }
 
     const entry = teamMap.get(sub.team_name)!
-    entry.total_points += sub.points_awarded
+    entry.total_points += sub.points_awarded!
     entry.total_duration += sub.duration_seconds ?? 0
     entry.accepted_count++
     entry.accepted_problems.push({
       problem_id: sub.problem_id,
       title: problemMap.get(sub.problem_id)?.title ?? 'Unknown',
-      points: sub.points_awarded,
+      points: sub.points_awarded!,
       duration: sub.duration_seconds ?? 0,
     })
   }
