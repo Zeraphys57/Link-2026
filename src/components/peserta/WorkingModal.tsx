@@ -28,18 +28,20 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
 
   const isChallenge = problem.level === 'super'
 
-  const handleSubmit = async () => {
-    if (isChallenge && timeUp) {
+  // `auto` = dipanggil otomatis saat waktu Challenge habis: lewati validasi
+  // jawaban kosong & konfirmasi, jawaban dikumpulkan apa adanya.
+  const handleSubmit = async (auto = false) => {
+    if (!auto && isChallenge && timeUp) {
       toast.error('Waktu sudah habis. Soal Challenge tidak bisa dikumpulkan lagi.')
       return
     }
 
-    if (!answer.trim()) {
+    if (!auto && !answer.trim()) {
       toast.error('Tulis jawabanmu dulu sebelum mengumpulkan.')
       return
     }
 
-    if (!confirming) {
+    if (!auto && !confirming) {
       setConfirming(true)
       return
     }
@@ -64,6 +66,7 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
       toast.error('Gagal mengumpulkan. Coba lagi.')
       setLoading(false)
       setConfirming(false)
+      if (auto) setTimeUp(true)
       return
     }
 
@@ -74,7 +77,11 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
       answer: answer.trim(),
     }
 
-    toast.success('Jawaban berhasil dikumpulkan! Menunggu penilaian panitia.')
+    toast.success(
+      auto
+        ? 'Waktu habis — jawaban otomatis dikumpulkan. Menunggu penilaian panitia.'
+        : 'Jawaban berhasil dikumpulkan! Menunggu penilaian panitia.'
+    )
     setSubmitted(true)
     setTimeout(() => {
       onSubmitted(updatedSubmission)
@@ -116,7 +123,10 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
               <Stopwatch
                 startTime={submission.started_at}
                 countdownFrom={CHALLENGE_DURATION_SECONDS}
-                onExpire={() => setTimeUp(true)}
+                onExpire={() => {
+                  setTimeUp(true)
+                  if (!submitted && !loading) handleSubmit(true)
+                }}
                 className="text-lg font-bold tabular-nums"
                 showIcon={false}
               />
@@ -206,7 +216,7 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
             </button>
           )}
           <button
-            onClick={handleSubmit}
+            onClick={() => handleSubmit()}
             disabled={loading || (isChallenge && timeUp)}
             className="btn-success flex items-center gap-2 px-6 active:scale-[0.98]"
           >
