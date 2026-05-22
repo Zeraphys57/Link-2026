@@ -88,11 +88,9 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
 
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-2.5">
-              {profile.team_name && (
-                <span className="text-xs font-bold bg-amber-500/10 border border-amber-500/25 text-amber-300 px-3 py-1 rounded-full tracking-wide">
-                  {profile.team_name}
-                </span>
-              )}
+              <span className="text-xs font-bold bg-amber-500/10 border border-amber-500/25 text-amber-300 px-3 py-1 rounded-full tracking-wide">
+                Peserta
+              </span>
               <p className="text-sm font-medium text-gray-300">{profile.display_name}</p>
             </div>
             <button
