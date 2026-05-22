@@ -16,6 +16,10 @@ interface Props {
   onSubmissionsChange: (submissions: Submission[]) => void
 }
 
+// Sesi Challenge: kalau true, peserta hanya melihat soal Challenge — soal Final
+// (easy/medium/hard) disembunyikan. Set kembali false setelah sesi Challenge selesai.
+const CHALLENGE_ONLY = true
+
 const LEVEL_ORDER: Level[] = ['easy', 'medium', 'hard', 'super']
 const LEVEL_LABELS: Record<Level, string> = {
   easy: 'Easy',
@@ -46,8 +50,12 @@ export default function ProblemBoard({ problems, submissions, profile, onSubmiss
   const [claimTarget, setClaimTarget] = useState<Problem | null>(null)
   const [workingTarget, setWorkingTarget] = useState<Problem | null>(null)
 
+  const visibleProblems = CHALLENGE_ONLY
+    ? problems.filter(p => p.level === 'super')
+    : problems
+
   const grouped = LEVEL_ORDER.reduce<Record<Level, Problem[]>>((acc, level) => {
-    acc[level] = problems.filter(p => p.level === level)
+    acc[level] = visibleProblems.filter(p => p.level === level)
     return acc
   }, { easy: [], medium: [], hard: [], super: [] })
 
