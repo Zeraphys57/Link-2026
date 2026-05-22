@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { CheckCircle2, XCircle, Clock, User, FileText, Terminal } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { CheckCircle2, XCircle, Clock, User, FileText, Terminal, Maximize2, Minimize2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Problem, Submission } from '@/lib/types'
 import Modal from '@/components/ui/Modal'
@@ -17,8 +17,27 @@ interface Props {
 }
 
 export default function GradeModal({ problem, submission, onClose, onGraded }: Props) {
-  const [notes, setNotes] = useState('')
+  const [notes, setNotes] = useState(submission.notes ?? '')
   const [loading, setLoading] = useState<'accept' | 'reject' | null>(null)
+
+  // Submission yang sudah punya verdict = sedang dicek ulang (recheck).
+  const isRegrade = submission.verdict !== null
+
+  const [answerFull, setAnswerFull] = useState(false)
+
+  // Esc menutup tampilan fullscreen jawaban lebih dulu, bukan seluruh modal.
+  // Listener fase-capture agar jalan sebelum handler Esc milik Modal.
+  useEffect(() => {
+    if (!answerFull) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopImmediatePropagation()
+        setAnswerFull(false)
+      }
+    }
+    document.addEventListener('keydown', onKey, true)
+    return () => document.removeEventListener('keydown', onKey, true)
+  }, [answerFull])
 
   const grade = async (verdict: 'accepted' | 'rejected') => {
     setLoading(verdict === 'accepted' ? 'accept' : 'reject')
@@ -59,7 +78,8 @@ export default function GradeModal({ problem, submission, onClose, onGraded }: P
   const duration = submission.duration_seconds
 
   return (
-    <Modal open onClose={onClose} title="Koreksi Jawaban" size="lg">
+    <>
+    <Modal open onClose={onClose} title={isRegrade ? 'Cek Ulang Jawaban' : 'Koreksi Jawaban'} size="lg">
       <div className="p-6 space-y-5">
         {/* Problem info */}
         <div className="bg-gray-950 border border-gray-800 rounded-xl p-4 space-y-3">
@@ -86,11 +106,42 @@ export default function GradeModal({ problem, submission, onClose, onGraded }: P
           </div>
         </div>
 
+        {/* Banner recheck: verdict sebelumnya */}
+        {isRegrade && (
+          <div className={`rounded-xl border p-3 text-sm flex items-start gap-2 ${
+            submission.verdict === 'accepted'
+              ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300'
+              : 'bg-red-500/10 border-red-500/25 text-red-300'
+          }`}>
+            {submission.verdict === 'accepted'
+              ? <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              : <XCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />}
+            <span>
+              Jawaban ini sebelumnya{' '}
+              <span className="font-bold">
+                {submission.verdict === 'accepted' ? 'Diterima' : 'Ditolak'}
+              </span>
+              . Penilaian baru akan menggantikan keputusan sebelumnya.
+            </span>
+          </div>
+        )}
+
         {/* Submitted answer */}
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Terminal className="w-4 h-4 text-gray-400" />
-            <span className="text-sm font-medium text-gray-300">Jawaban Tim</span>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-2">
+              <Terminal className="w-4 h-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-300">Jawaban Tim</span>
+            </div>
+            {submission.answer && (
+              <button
+                onClick={() => setAnswerFull(true)}
+                className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-amber-300 bg-gray-800 hover:bg-gray-700 px-2.5 py-1 rounded-lg transition-colors"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+                Perbesar
+              </button>
+            )}
           </div>
           {submission.answer ? (
             <div className="bg-gray-950 border border-gray-700 rounded-xl p-4 max-h-48 overflow-y-auto">
@@ -148,5 +199,32 @@ export default function GradeModal({ problem, submission, onClose, onGraded }: P
         </div>
       </div>
     </Modal>
+
+    {/* Tampilan fullscreen jawaban tim */}
+    {answerFull && submission.answer && (
+      <div className="fixed inset-0 z-[60] flex flex-col bg-gray-950">
+        <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-gray-800 flex-shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <Terminal className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <span className="text-sm font-medium text-gray-300 truncate">
+              Jawaban Tim {submission.team_name}
+            </span>
+          </div>
+          <button
+            onClick={() => setAnswerFull(false)}
+            className="flex items-center gap-1.5 text-sm font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 active:scale-[0.98] px-3 py-1.5 rounded-lg transition-all flex-shrink-0"
+          >
+            <Minimize2 className="w-4 h-4" />
+            Tutup
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-6">
+          <pre className="text-sm text-gray-100 font-mono whitespace-pre-wrap break-words leading-relaxed">
+            {submission.answer}
+          </pre>
+        </div>
+      </div>
+    )}
+    </>
   )
 }

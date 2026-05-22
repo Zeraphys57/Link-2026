@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { ClipboardCheck, ClipboardList, Clock, CheckCircle2, XCircle, Hourglass, PlayCircle, Pencil } from 'lucide-react'
+import { ClipboardCheck, ClipboardList, Clock, CheckCircle2, XCircle, Hourglass, PlayCircle, Pencil, RotateCcw } from 'lucide-react'
 import type { Problem, Submission } from '@/lib/types'
 import LevelBadge from '@/components/ui/LevelBadge'
 import Stopwatch, { formatDuration } from '@/components/ui/Stopwatch'
@@ -199,6 +199,16 @@ function SubmissionRow({ submission, onGrade }: { submission: Submission; onGrad
         >
           <ClipboardCheck className="w-3.5 h-3.5" />
           Koreksi
+        </button>
+      )}
+
+      {state === 'rejected' && (
+        <button
+          onClick={onGrade}
+          className="flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 active:scale-[0.98] text-gray-300 hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all flex-shrink-0 border border-gray-700"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          Cek Ulang
         </button>
       )}
     </div>
