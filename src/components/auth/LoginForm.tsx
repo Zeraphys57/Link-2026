@@ -110,7 +110,7 @@ export default function LoginForm() {
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
-            placeholder={mode === 'tim' ? 'Contoh: Garuda' : 'email@example.com'}
+            placeholder={mode === 'tim' ? 'Contoh: linkKSP' : 'email@example.com'}
             required
             disabled={loading}
             autoComplete={mode === 'tim' ? 'off' : 'email'}
