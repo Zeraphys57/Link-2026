@@ -12,13 +12,12 @@ interface Props {
   problems: Problem[]
   submissions: Submission[]
   profile: Profile
+  // Sesi Challenge: kalau true, peserta hanya melihat soal Challenge — soal Final
+  // (easy/medium/hard) disembunyikan. Dikontrol admin lewat tabel app_settings.
+  challengeOnly: boolean
   onProblemsChange: (problems: Problem[]) => void
   onSubmissionsChange: (submissions: Submission[]) => void
 }
-
-// Sesi Challenge: kalau true, peserta hanya melihat soal Challenge — soal Final
-// (easy/medium/hard) disembunyikan. Set kembali false setelah sesi Challenge selesai.
-const CHALLENGE_ONLY = true
 
 const LEVEL_ORDER: Level[] = ['easy', 'medium', 'hard', 'super']
 const LEVEL_LABELS: Record<Level, string> = {
@@ -46,11 +45,11 @@ const LEVEL_ICONS = {
   super: Crown,
 }
 
-export default function ProblemBoard({ problems, submissions, profile, onSubmissionsChange }: Props) {
+export default function ProblemBoard({ problems, submissions, profile, challengeOnly, onSubmissionsChange }: Props) {
   const [claimTarget, setClaimTarget] = useState<Problem | null>(null)
   const [workingTarget, setWorkingTarget] = useState<Problem | null>(null)
 
-  const visibleProblems = CHALLENGE_ONLY
+  const visibleProblems = challengeOnly
     ? problems.filter(p => p.level === 'super')
     : problems
 

@@ -11,6 +11,7 @@ import EditProblemModal from './EditProblemModal'
 interface Props {
   problems: Problem[]
   submissions: Submission[]
+  isAdmin?: boolean
   onSubmissionsChange: (updated: Submission[]) => void
   onProblemUpdated: (problem: Problem) => void
 }
@@ -24,7 +25,7 @@ function stateOf(s: Submission): SubmissionState {
   return 'in_progress'
 }
 
-export default function MyProblems({ problems, submissions, onSubmissionsChange, onProblemUpdated }: Props) {
+export default function MyProblems({ problems, submissions, isAdmin = false, onSubmissionsChange, onProblemUpdated }: Props) {
   const [gradeTarget, setGradeTarget] = useState<{ problem: Problem; submission: Submission } | null>(null)
   const [editTarget, setEditTarget] = useState<Problem | null>(null)
 
@@ -71,7 +72,9 @@ export default function MyProblems({ problems, submissions, onSubmissionsChange,
 
   return (
     <div className="space-y-3">
-      <p className="text-xs text-gray-600 uppercase tracking-widest font-medium">{problems.length} soal oleh kamu</p>
+      <p className="text-xs text-gray-600 uppercase tracking-widest font-medium">
+        {problems.length} soal {isAdmin ? 'dari semua panitia' : 'oleh kamu'}
+      </p>
 
       {sortedProblems.map(problem => {
         const subs = subsByProblem.get(problem.id) ?? []

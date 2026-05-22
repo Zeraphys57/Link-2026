@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { LogOut, LayoutGrid, Trophy, Gem } from 'lucide-react'
+import { LogOut, LayoutGrid, Trophy } from 'lucide-react'
+import Logo from '@/components/ui/Logo'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile, Problem, Submission } from '@/lib/types'
 import ProblemBoard from './ProblemBoard'
@@ -13,13 +14,15 @@ interface Props {
   profile: Profile
   initialProblems: Problem[]
   initialSubmissions: Submission[]
+  initialChallengeOnly: boolean
 }
 
 type Tab = 'problems' | 'leaderboard'
 
-export default function PesertaDashboard({ profile, initialProblems, initialSubmissions }: Props) {
+export default function PesertaDashboard({ profile, initialProblems, initialSubmissions, initialChallengeOnly }: Props) {
   const [problems, setProblems] = useState<Problem[]>(initialProblems)
   const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions)
+  const [challengeOnly, setChallengeOnly] = useState(initialChallengeOnly)
   const [activeTab, setActiveTab] = useState<Tab>('problems')
   const [loggingOut, setLoggingOut] = useState(false)
   const router = useRouter()
@@ -45,15 +48,23 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
     }
   }, [])
 
+  const handleSettingsChange = useCallback((payload: { new: Record<string, unknown> }) => {
+    const row = payload.new as { key?: string; bool_value?: boolean }
+    if (row.key === 'challenge_only' && typeof row.bool_value === 'boolean') {
+      setChallengeOnly(row.bool_value)
+    }
+  }, [])
+
   useEffect(() => {
     const channel = supabase
       .channel('peserta-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'problems' }, handleProblemChange)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'submissions' }, handleSubmissionChange)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, handleSettingsChange)
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
-  }, [handleProblemChange, handleSubmissionChange, supabase])
+  }, [handleProblemChange, handleSubmissionChange, handleSettingsChange, supabase])
 
   const handleLogout = async () => {
     setLoggingOut(true)
@@ -68,9 +79,7 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
       <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-amber-600/20 border border-amber-500/30 flex items-center justify-center">
-              <Gem className="w-4 h-4 text-amber-400" />
-            </div>
+            <Logo className="w-8 h-8 rounded-lg" />
             <div>
               <span className="font-bold text-white text-sm">LINK 2026</span>
               <span className="hidden sm:inline text-gray-500 text-xs ml-2">Competitive Programming</span>
@@ -129,6 +138,7 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
               problems={problems}
               submissions={submissions}
               profile={profile}
+              challengeOnly={challengeOnly}
               onProblemsChange={setProblems}
               onSubmissionsChange={setSubmissions}
             />

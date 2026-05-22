@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { LogOut, ClipboardList, LayoutList, PlusCircle, Gem } from 'lucide-react'
+import { LogOut, ClipboardList, LayoutList, PlusCircle, Eye, EyeOff } from 'lucide-react'
+import Logo from '@/components/ui/Logo'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile, Problem, Submission } from '@/lib/types'
 import MyProblems from './MyProblems'
@@ -14,15 +15,19 @@ interface Props {
   profile: Profile
   initialProblems: Problem[]
   initialSubmissions: Submission[]
+  isAdmin: boolean
+  initialChallengeOnly: boolean
 }
 
 type Tab = 'my-problems' | 'all-problems' | 'add-problem'
 
-export default function PanitiaDashboard({ profile, initialProblems, initialSubmissions }: Props) {
+export default function PanitiaDashboard({ profile, initialProblems, initialSubmissions, isAdmin, initialChallengeOnly }: Props) {
   const [problems, setProblems] = useState<Problem[]>(initialProblems)
   const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions)
   const [activeTab, setActiveTab] = useState<Tab>('my-problems')
   const [loggingOut, setLoggingOut] = useState(false)
+  const [challengeOnly, setChallengeOnly] = useState(initialChallengeOnly)
+  const [togglingChallenge, setTogglingChallenge] = useState(false)
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
 
@@ -46,15 +51,23 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
     }
   }, [])
 
+  const handleSettingsChange = useCallback((payload: { new: Record<string, unknown> }) => {
+    const row = payload.new as { key?: string; bool_value?: boolean }
+    if (row.key === 'challenge_only' && typeof row.bool_value === 'boolean') {
+      setChallengeOnly(row.bool_value)
+    }
+  }, [])
+
   useEffect(() => {
     const channel = supabase
       .channel('panitia-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'problems' }, handleProblemChange)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'submissions' }, handleSubmissionChange)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, handleSettingsChange)
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
-  }, [handleProblemChange, handleSubmissionChange, supabase])
+  }, [handleProblemChange, handleSubmissionChange, handleSettingsChange, supabase])
 
   const handleLogout = async () => {
     setLoggingOut(true)
@@ -63,8 +76,36 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
     router.refresh()
   }
 
+  const toggleChallengeOnly = async () => {
+    setTogglingChallenge(true)
+    const next = !challengeOnly
+    const { error } = await supabase
+      .from('app_settings')
+      .update({ bool_value: next, updated_at: new Date().toISOString() })
+      .eq('key', 'challenge_only')
+    if (error) {
+      toast.error('Gagal mengubah pengaturan.')
+    } else {
+      setChallengeOnly(next)
+      toast.success(next
+        ? 'Soal Final disembunyikan — peserta hanya melihat soal Challenge.'
+        : 'Soal Final kini terlihat oleh peserta.')
+    }
+    setTogglingChallenge(false)
+  }
+
+  // Admin melihat & menilai/mengedit soal SEMUA panitia; panitia biasa hanya soal sendiri.
+  const myProblems = isAdmin ? problems : problems.filter(p => p.created_by === profile.id)
+  const mySubmissions = isAdmin
+    ? submissions
+    : submissions.filter(s => {
+        const p = problems.find(pr => pr.id === s.problem_id)
+        return p?.created_by === profile.id
+      })
+
   const pendingCount = submissions.filter(s => {
     if (s.verdict || !s.submitted_at) return false
+    if (isAdmin) return true
     const problem = problems.find(p => p.id === s.problem_id)
     return problem?.created_by === profile.id
   }).length
@@ -75,19 +116,36 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
       <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-amber-600/20 border border-amber-500/30 flex items-center justify-center">
-              <Gem className="w-4 h-4 text-amber-400" />
-            </div>
+            <Logo className="w-8 h-8 rounded-lg" />
             <div>
               <span className="font-bold text-white text-sm">LINK 2026</span>
               <span className="hidden sm:inline text-amber-500/60 text-xs ml-2">Panitia Panel</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            {isAdmin && (
+              <button
+                onClick={toggleChallengeOnly}
+                disabled={togglingChallenge}
+                title={challengeOnly
+                  ? 'Soal Final disembunyikan dari peserta — klik untuk menampilkan'
+                  : 'Soal Final terlihat peserta — klik untuk menyembunyikan'}
+                className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors disabled:opacity-50 ${
+                  challengeOnly
+                    ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 hover:bg-amber-500/25'
+                    : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700'
+                }`}
+              >
+                {challengeOnly ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                <span className="hidden sm:inline">
+                  {challengeOnly ? 'Soal Final disembunyikan' : 'Soal Final terlihat'}
+                </span>
+              </button>
+            )}
             <div className="hidden sm:flex items-center gap-2.5">
               <span className="text-xs font-bold bg-amber-500/10 border border-amber-500/25 text-amber-300 px-3 py-1 rounded-full tracking-wide">
-                Panitia
+                {isAdmin ? 'Admin' : 'Panitia'}
               </span>
               <p className="text-sm font-medium text-gray-300">{profile.display_name}</p>
             </div>
@@ -111,7 +169,7 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
               active={activeTab === 'my-problems'}
               onClick={() => setActiveTab('my-problems')}
               icon={<ClipboardList className="w-4 h-4" />}
-              label="Soal Saya"
+              label={isAdmin ? 'Koreksi Soal' : 'Soal Saya'}
               badge={pendingCount > 0 ? pendingCount : undefined}
             />
             <TabButton
@@ -135,11 +193,9 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
         <div key={activeTab} style={{ animation: 'fadeIn 0.18s ease-out both' }}>
           {activeTab === 'my-problems' && (
             <MyProblems
-              problems={problems.filter(p => p.created_by === profile.id)}
-              submissions={submissions.filter(s => {
-                const p = problems.find(pr => pr.id === s.problem_id)
-                return p?.created_by === profile.id
-              })}
+              isAdmin={isAdmin}
+              problems={myProblems}
+              submissions={mySubmissions}
               onSubmissionsChange={(updated) => setSubmissions(prev => prev.map(s => {
                 const u = updated.find(up => up.id === s.id)
                 return u ?? s
