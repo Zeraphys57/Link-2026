@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { ClipboardCheck, ClipboardList, Clock, CheckCircle2, XCircle, Hourglass, PlayCircle, Pencil, RotateCcw } from 'lucide-react'
+import { ClipboardCheck, ClipboardList, Clock, CheckCircle2, XCircle, Hourglass, PlayCircle, Pencil, RotateCcw, TimerOff } from 'lucide-react'
+import { CHALLENGE_DURATION_SECONDS } from '@/lib/types'
 import type { Problem, Submission } from '@/lib/types'
 import LevelBadge from '@/components/ui/LevelBadge'
 import Stopwatch, { formatDuration } from '@/components/ui/Stopwatch'
@@ -125,6 +126,7 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
                   <SubmissionRow
                     key={sub.id}
                     submission={sub}
+                    isChallenge={problem.level === 'super'}
                     onGrade={() => setGradeTarget({ problem, submission: sub })}
                   />
                 ))}
@@ -161,7 +163,34 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
   )
 }
 
-function SubmissionRow({ submission, onGrade }: { submission: Submission; onGrade: () => void }) {
+// Timer mundur soal Challenge di dashboard panitia. Saat 30 menit habis,
+// berhenti dan berubah jadi badge "Timeout" hitam — tidak terus berjalan.
+function ChallengeCountdown({ startedAt }: { startedAt: string }) {
+  const [expired, setExpired] = useState(
+    () => (Date.now() - new Date(startedAt).getTime()) / 1000 >= CHALLENGE_DURATION_SECONDS
+  )
+
+  if (expired) {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 bg-black border border-gray-700 px-2 py-0.5 rounded-full">
+        <TimerOff className="w-3 h-3" />
+        Timeout
+      </span>
+    )
+  }
+
+  return (
+    <Stopwatch
+      startTime={startedAt}
+      countdownFrom={CHALLENGE_DURATION_SECONDS}
+      onExpire={() => setExpired(true)}
+      className="text-xs tabular-nums"
+      showIcon={false}
+    />
+  )
+}
+
+function SubmissionRow({ submission, isChallenge, onGrade }: { submission: Submission; isChallenge: boolean; onGrade: () => void }) {
   const state = stateOf(submission)
 
   return (
@@ -172,11 +201,15 @@ function SubmissionRow({ submission, onGrade }: { submission: Submission; onGrad
         </span>
         <StateBadge state={state} />
         {state === 'in_progress' && (
-          <Stopwatch
-            startTime={submission.started_at}
-            className="text-xs text-blue-400 tabular-nums"
-            showIcon={false}
-          />
+          isChallenge ? (
+            <ChallengeCountdown startedAt={submission.started_at} />
+          ) : (
+            <Stopwatch
+              startTime={submission.started_at}
+              className="text-xs text-blue-400 tabular-nums"
+              showIcon={false}
+            />
+          )
         )}
         {state !== 'in_progress' && submission.duration_seconds != null && (
           <span className="flex items-center gap-1 text-xs text-gray-500 tabular-nums">
