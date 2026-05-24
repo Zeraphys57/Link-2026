@@ -42,6 +42,7 @@ const PANITIA: UserToCreate[] = [
   { email: 'andikaxz12@gmail.com',            password: 'panitiaLink2026!', display_name: 'Andika',  role: 'panitia' },
   { email: 'joanthio09@gmail.com',            password: 'panitiaLink2026!', display_name: 'Joaquin', role: 'panitia' },
   { email: 'bryanjacquellino5757@gmail.com',  password: 'panitiaLink2026!', display_name: 'Bryan',   role: 'panitia' },
+  { email: 'widyatama009@gmail.com',          password: 'panitiaLink2026!', display_name: 'Widy',    role: 'panitia' },
 ]
 
 // Tim peserta — 1 akun per tim. Anggota 1 = baris berisi nama tim saat pendaftaran.
