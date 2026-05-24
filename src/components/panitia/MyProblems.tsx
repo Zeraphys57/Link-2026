@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { ClipboardCheck, ClipboardList, Clock, CheckCircle2, XCircle, Hourglass, PlayCircle, Pencil, RotateCcw, TimerOff, ChevronDown } from 'lucide-react'
+import { ClipboardCheck, ClipboardList, Clock, CheckCircle2, XCircle, Hourglass, PlayCircle, Pencil, RotateCcw, TimerOff, ChevronDown, Search, X } from 'lucide-react'
 import { CHALLENGE_DURATION_SECONDS } from '@/lib/types'
-import type { Problem, Submission } from '@/lib/types'
+import type { Problem, Submission, Level } from '@/lib/types'
 import LevelBadge from '@/components/ui/LevelBadge'
 import Stopwatch, { formatDuration } from '@/components/ui/Stopwatch'
 import TeamDetailModal from '@/components/ui/TeamDetailModal'
@@ -65,6 +65,25 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
     })
   }, [problems, subsByProblem])
 
+  // Search + filter state
+  const [search, setSearch] = useState('')
+  const [levelFilter, setLevelFilter] = useState<Level | 'all'>('all')
+  const [needsGradingOnly, setNeedsGradingOnly] = useState(false)
+
+  const filteredProblems = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    return sortedProblems.filter(p => {
+      if (levelFilter !== 'all' && p.level !== levelFilter) return false
+      if (q && !p.title.toLowerCase().includes(q)) return false
+      if (needsGradingOnly) {
+        const subs = subsByProblem.get(p.id) ?? []
+        const needs = subs.some(s => stateOf(s) === 'awaiting_grade')
+        if (!needs) return false
+      }
+      return true
+    })
+  }, [sortedProblems, search, levelFilter, needsGradingOnly, subsByProblem])
+
   if (problems.length === 0) {
     return (
       <div className="text-center py-24">
@@ -75,13 +94,45 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
     )
   }
 
+  const totalNeedsGrading = sortedProblems.reduce((acc, p) => {
+    const subs = subsByProblem.get(p.id) ?? []
+    return acc + (subs.some(s => stateOf(s) === 'awaiting_grade') ? 1 : 0)
+  }, 0)
+
   return (
     <div className="space-y-3">
-      <p className="text-xs text-gray-600 uppercase tracking-widest font-medium">
-        {problems.length} soal {isAdmin ? 'dari semua panitia' : 'oleh kamu'}
-      </p>
+      <div className="flex items-center gap-3 flex-wrap">
+        <p className="text-xs text-gray-600 uppercase tracking-widest font-medium">
+          {filteredProblems.length === sortedProblems.length
+            ? `${sortedProblems.length} soal ${isAdmin ? 'dari semua panitia' : 'oleh kamu'}`
+            : `${filteredProblems.length} dari ${sortedProblems.length} soal`}
+        </p>
+      </div>
 
-      {sortedProblems.map(problem => {
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        levelFilter={levelFilter}
+        onLevelChange={setLevelFilter}
+        needsGradingOnly={needsGradingOnly}
+        onNeedsGradingChange={setNeedsGradingOnly}
+        totalNeedsGrading={totalNeedsGrading}
+      />
+
+      {filteredProblems.length === 0 ? (
+        <div className="text-center py-12 bg-gray-950/30 rounded-xl border border-gray-800/60">
+          <Search className="w-8 h-8 mx-auto mb-3 text-gray-700" />
+          <p className="text-sm text-gray-500">Tidak ada soal yang cocok dengan filter.</p>
+          <button
+            onClick={() => { setSearch(''); setLevelFilter('all'); setNeedsGradingOnly(false) }}
+            className="mt-3 text-xs text-amber-400 hover:text-amber-300 underline"
+          >
+            Reset semua filter
+          </button>
+        </div>
+      ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+      {filteredProblems.map(problem => {
         const subs = subsByProblem.get(problem.id) ?? []
         const needsGradingCount = subs.filter(s => stateOf(s) === 'awaiting_grade').length
         const canCollapse = subs.length > 0
@@ -151,6 +202,8 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
           </div>
         )
       })}
+      </div>
+      )}
 
       <TeamDetailModal
         open={teamDetailFor !== null}
@@ -306,5 +359,86 @@ function StateBadge({ state }: { state: SubmissionState }) {
       <XCircle className="w-3 h-3" />
       Ditolak
     </span>
+  )
+}
+
+const LEVEL_PILL_CONFIG: Record<Level | 'all', { label: string; className: string; activeClassName: string }> = {
+  all:    { label: 'Semua',     className: 'text-gray-400 bg-gray-800 border-gray-700 hover:bg-gray-700',                   activeClassName: 'text-white bg-amber-500 border-amber-400 hover:bg-amber-400' },
+  easy:   { label: 'Easy',      className: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/25 hover:bg-emerald-400/20', activeClassName: 'text-white bg-emerald-500 border-emerald-400' },
+  medium: { label: 'Medium',    className: 'text-orange-400 bg-orange-400/10 border-orange-400/25 hover:bg-orange-400/20',     activeClassName: 'text-white bg-orange-500 border-orange-400' },
+  hard:   { label: 'Hard',      className: 'text-purple-400 bg-purple-400/10 border-purple-400/25 hover:bg-purple-400/20',     activeClassName: 'text-white bg-purple-500 border-purple-400' },
+  super:  { label: 'Challenge', className: 'text-blue-400 bg-blue-400/10 border-blue-400/25 hover:bg-blue-400/20',             activeClassName: 'text-white bg-blue-500 border-blue-400' },
+}
+
+function FilterBar({
+  search, onSearchChange,
+  levelFilter, onLevelChange,
+  needsGradingOnly, onNeedsGradingChange,
+  totalNeedsGrading,
+}: {
+  search: string
+  onSearchChange: (v: string) => void
+  levelFilter: Level | 'all'
+  onLevelChange: (l: Level | 'all') => void
+  needsGradingOnly: boolean
+  onNeedsGradingChange: (v: boolean) => void
+  totalNeedsGrading: number
+}) {
+  return (
+    <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-3 space-y-2.5">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+        <input
+          type="text"
+          value={search}
+          onChange={e => onSearchChange(e.target.value)}
+          placeholder="Cari judul soal…"
+          className="w-full bg-gray-950/60 border border-gray-800 rounded-lg pl-9 pr-9 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/60"
+        />
+        {search && (
+          <button
+            onClick={() => onSearchChange('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+            title="Bersihkan pencarian"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2 flex-wrap">
+        {(['all', 'easy', 'medium', 'hard', 'super'] as const).map(l => {
+          const cfg = LEVEL_PILL_CONFIG[l]
+          const active = levelFilter === l
+          return (
+            <button
+              key={l}
+              onClick={() => onLevelChange(l)}
+              className={`text-xs font-semibold border rounded-full px-3 py-1 transition-colors ${active ? cfg.activeClassName : cfg.className}`}
+            >
+              {cfg.label}
+            </button>
+          )
+        })}
+
+        <button
+          onClick={() => onNeedsGradingChange(!needsGradingOnly)}
+          disabled={totalNeedsGrading === 0 && !needsGradingOnly}
+          className={`ml-auto inline-flex items-center gap-1.5 text-xs font-semibold border rounded-full px-3 py-1 transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+            needsGradingOnly
+              ? 'bg-amber-500 border-amber-400 text-white'
+              : 'bg-amber-500/10 border-amber-500/30 text-amber-300 hover:bg-amber-500/20'
+          }`}
+        >
+          <Hourglass className="w-3 h-3" />
+          Perlu Dinilai
+          {totalNeedsGrading > 0 && (
+            <span className={`text-[10px] tabular-nums px-1.5 py-0.5 rounded-full ${needsGradingOnly ? 'bg-amber-700/50' : 'bg-amber-500/20'}`}>
+              {totalNeedsGrading}
+            </span>
+          )}
+        </button>
+      </div>
+    </div>
   )
 }
