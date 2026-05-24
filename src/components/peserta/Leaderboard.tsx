@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import { Trophy, Medal, Clock, Star } from 'lucide-react'
 import type { Problem, Submission, LeaderboardEntry } from '@/lib/types'
 import { formatDuration } from '@/components/ui/Stopwatch'
+import TeamDetailModal from '@/components/ui/TeamDetailModal'
 
 interface Props {
   problems: Problem[]
@@ -58,6 +60,7 @@ function computeLeaderboard(submissions: Submission[], problems: Problem[]): Lea
 
 export default function Leaderboard({ problems, submissions }: Props) {
   const entries = computeLeaderboard(submissions, problems)
+  const [openTeam, setOpenTeam] = useState<string | null>(null)
 
   if (entries.length === 0) {
     return (
@@ -81,19 +84,29 @@ export default function Leaderboard({ problems, submissions }: Props) {
       </div>
 
       {entries.map((entry, i) => {
-        if (i === 0) return <RankFirst key={entry.team_name} entry={entry} />
-        if (i === 1 || i === 2) return <RankPodium key={entry.team_name} entry={entry} rank={i} />
-        return <RankRest key={entry.team_name} entry={entry} rank={i} />
+        const onClick = () => setOpenTeam(entry.team_name)
+        if (i === 0) return <RankFirst key={entry.team_name} entry={entry} onClick={onClick} />
+        if (i === 1 || i === 2) return <RankPodium key={entry.team_name} entry={entry} rank={i} onClick={onClick} />
+        return <RankRest key={entry.team_name} entry={entry} rank={i} onClick={onClick} />
       })}
+
+      <TeamDetailModal
+        open={openTeam !== null}
+        teamName={openTeam}
+        problems={problems}
+        submissions={submissions}
+        onClose={() => setOpenTeam(null)}
+      />
     </div>
   )
 }
 
-function RankFirst({ entry }: { entry: LeaderboardEntry }) {
+function RankFirst({ entry, onClick }: { entry: LeaderboardEntry; onClick: () => void }) {
   return (
     <div
-      className="relative border border-yellow-500/40 bg-yellow-950/20 rounded-2xl p-5 overflow-hidden"
+      className="relative border border-yellow-500/40 bg-yellow-950/20 rounded-2xl p-5 overflow-hidden cursor-pointer hover:bg-yellow-950/30 transition-colors"
       style={{ animation: 'rank1-pulse 3s ease-in-out infinite' }}
+      onClick={onClick}
     >
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -141,7 +154,7 @@ function RankFirst({ entry }: { entry: LeaderboardEntry }) {
   )
 }
 
-function RankPodium({ entry, rank }: { entry: LeaderboardEntry; rank: number }) {
+function RankPodium({ entry, rank, onClick }: { entry: LeaderboardEntry; rank: number; onClick: () => void }) {
   const is2nd = rank === 1
   const iconColor = is2nd ? 'text-gray-300' : 'text-amber-600'
   const textColor = is2nd ? 'text-gray-200' : 'text-gray-300'
@@ -150,7 +163,7 @@ function RankPodium({ entry, rank }: { entry: LeaderboardEntry; rank: number }) 
   const label = is2nd ? '2nd' : '3rd'
 
   return (
-    <div className={`border ${borderColor} bg-gray-900 rounded-xl p-4`}>
+    <div className={`border ${borderColor} bg-gray-900 rounded-xl p-4 cursor-pointer hover:bg-gray-800/60 transition-colors`} onClick={onClick}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center flex-shrink-0`}>
@@ -190,9 +203,9 @@ function RankPodium({ entry, rank }: { entry: LeaderboardEntry; rank: number }) 
   )
 }
 
-function RankRest({ entry, rank }: { entry: LeaderboardEntry; rank: number }) {
+function RankRest({ entry, rank, onClick }: { entry: LeaderboardEntry; rank: number; onClick: () => void }) {
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border border-gray-800/60 bg-gray-900/50 rounded-xl">
+    <div className="flex items-center gap-3 px-4 py-3 border border-gray-800/60 bg-gray-900/50 rounded-xl cursor-pointer hover:bg-gray-800/60 transition-colors" onClick={onClick}>
       <span className="w-6 text-center text-sm font-bold text-gray-600 tabular-nums flex-shrink-0">{rank + 1}</span>
       <div className="flex-1 min-w-0">
         <span className="text-sm font-semibold text-gray-300 truncate block">{entry.team_name}</span>

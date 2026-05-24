@@ -6,6 +6,7 @@ import { CHALLENGE_DURATION_SECONDS } from '@/lib/types'
 import type { Problem, Submission } from '@/lib/types'
 import LevelBadge from '@/components/ui/LevelBadge'
 import Stopwatch, { formatDuration } from '@/components/ui/Stopwatch'
+import TeamDetailModal from '@/components/ui/TeamDetailModal'
 import GradeModal from './GradeModal'
 import EditProblemModal from './EditProblemModal'
 
@@ -29,6 +30,7 @@ function stateOf(s: Submission): SubmissionState {
 export default function MyProblems({ problems, submissions, isAdmin = false, onSubmissionsChange, onProblemUpdated }: Props) {
   const [gradeTarget, setGradeTarget] = useState<{ problem: Problem; submission: Submission } | null>(null)
   const [editTarget, setEditTarget] = useState<Problem | null>(null)
+  const [teamDetailFor, setTeamDetailFor] = useState<string | null>(null)
   // User override per problem: true=expanded, false=collapsed. Absent = use default (expand if needs grading).
   const [userToggled, setUserToggled] = useState<Record<string, boolean>>({})
 
@@ -141,6 +143,7 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
                     submission={sub}
                     isChallenge={problem.level === 'super'}
                     onGrade={() => setGradeTarget({ problem, submission: sub })}
+                    onTeamClick={() => setTeamDetailFor(sub.team_name)}
                   />
                 ))}
               </div>
@@ -148,6 +151,14 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
           </div>
         )
       })}
+
+      <TeamDetailModal
+        open={teamDetailFor !== null}
+        teamName={teamDetailFor}
+        problems={problems}
+        submissions={submissions}
+        onClose={() => setTeamDetailFor(null)}
+      />
 
       {gradeTarget && (
         <GradeModal
@@ -203,15 +214,19 @@ function ChallengeCountdown({ startedAt }: { startedAt: string }) {
   )
 }
 
-function SubmissionRow({ submission, isChallenge, onGrade }: { submission: Submission; isChallenge: boolean; onGrade: () => void }) {
+function SubmissionRow({ submission, isChallenge, onGrade, onTeamClick }: { submission: Submission; isChallenge: boolean; onGrade: () => void; onTeamClick: () => void }) {
   const state = stateOf(submission)
 
   return (
     <div className="flex items-center justify-between gap-3 py-2 px-3 bg-gray-950/40 rounded-lg flex-wrap">
       <div className="flex items-center gap-3 min-w-0 flex-1">
-        <span className="text-sm font-medium text-gray-200 whitespace-nowrap">
-          Tim <span className="text-white font-bold">{submission.team_name}</span>
-        </span>
+        <button
+          onClick={onTeamClick}
+          className="text-sm font-medium text-gray-200 whitespace-nowrap hover:text-amber-300 transition-colors text-left"
+          title="Lihat semua submission tim ini"
+        >
+          Tim <span className="text-white font-bold underline decoration-dotted decoration-gray-600 underline-offset-2 hover:decoration-amber-400">{submission.team_name}</span>
+        </button>
         <StateBadge state={state} />
         {state === 'in_progress' && (
           isChallenge ? (

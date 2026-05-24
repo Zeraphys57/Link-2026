@@ -73,3 +73,11 @@ export const LEVEL_LABELS: Record<Level, string> = {
 
 // Soal Challenge (level 'super') punya batas waktu mundur 30 menit sejak diambil.
 export const CHALLENGE_DURATION_SECONDS = 30 * 60
+
+// Timer kompetisi global. Diatur via TimerControlModal oleh admin.
+export interface ContestTimer {
+  startAt: string | null      // ISO timestamp; null = belum dimulai
+  durationSeconds: number     // total durasi kompetisi
+}
+
+export const DEFAULT_CONTEST_DURATION_SECONDS = 4 * 60 * 60   // 4 jam

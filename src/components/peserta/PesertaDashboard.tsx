@@ -3,8 +3,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { LogOut, LayoutGrid, Trophy } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
+import ContestCountdown from '@/components/ui/ContestCountdown'
 import { createClient } from '@/lib/supabase/client'
-import type { Profile, Problem, Submission } from '@/lib/types'
+import type { Profile, Problem, Submission, ContestTimer } from '@/lib/types'
+import { DEFAULT_CONTEST_DURATION_SECONDS } from '@/lib/types'
 import ProblemBoard from './ProblemBoard'
 import Leaderboard from './Leaderboard'
 import toast from 'react-hot-toast'
@@ -16,14 +18,16 @@ interface Props {
   initialProblems: Problem[]
   initialSubmissions: Submission[]
   initialChallengeOnly: boolean
+  initialContestTimer: ContestTimer
 }
 
 type Tab = 'problems' | 'leaderboard'
 
-export default function PesertaDashboard({ profile, initialProblems, initialSubmissions, initialChallengeOnly }: Props) {
+export default function PesertaDashboard({ profile, initialProblems, initialSubmissions, initialChallengeOnly, initialContestTimer }: Props) {
   const [problems, setProblems] = useState<Problem[]>(initialProblems)
   const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions)
   const [challengeOnly, setChallengeOnly] = useState(initialChallengeOnly)
+  const [contestTimer, setContestTimer] = useState<ContestTimer>(initialContestTimer)
   const [activeTab, setActiveTab] = useState<Tab>('problems')
   const [loggingOut, setLoggingOut] = useState(false)
   const router = useRouter()
@@ -52,9 +56,15 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
   }, [])
 
   const handleSettingsChange = useCallback((payload: { new: Record<string, unknown> }) => {
-    const row = payload.new as { key?: string; bool_value?: boolean }
+    const row = payload.new as { key?: string; bool_value?: boolean; ts_value?: string | null; int_value?: number | null }
     if (row.key === 'challenge_only' && typeof row.bool_value === 'boolean') {
       setChallengeOnly(row.bool_value)
+    }
+    if (row.key === 'contest_timer') {
+      setContestTimer({
+        startAt: row.ts_value ?? null,
+        durationSeconds: row.int_value ?? DEFAULT_CONTEST_DURATION_SECONDS,
+      })
     }
   }, [])
 
@@ -89,7 +99,12 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <ContestCountdown
+              startAt={contestTimer.startAt}
+              durationSeconds={contestTimer.durationSeconds}
+              compact
+            />
             <div className="hidden sm:flex items-center gap-2.5">
               <span className="text-xs font-bold bg-amber-500/10 border border-amber-500/25 text-amber-300 px-3 py-1 rounded-full tracking-wide">
                 Peserta

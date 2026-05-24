@@ -1,13 +1,16 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { LogOut, ClipboardList, LayoutList, PlusCircle, Eye, EyeOff, Trophy } from 'lucide-react'
+import { LogOut, ClipboardList, LayoutList, PlusCircle, Eye, EyeOff, Trophy, Timer } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
+import ContestCountdown from '@/components/ui/ContestCountdown'
 import { createClient } from '@/lib/supabase/client'
-import type { Profile, Problem, Submission } from '@/lib/types'
+import type { Profile, Problem, Submission, ContestTimer } from '@/lib/types'
+import { DEFAULT_CONTEST_DURATION_SECONDS } from '@/lib/types'
 import MyProblems from './MyProblems'
 import AllProblems from './AllProblems'
 import AddProblemModal from './AddProblemModal'
+import TimerControlModal from './TimerControlModal'
 import Leaderboard from '@/components/peserta/Leaderboard'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
@@ -19,17 +22,20 @@ interface Props {
   initialSubmissions: Submission[]
   isAdmin: boolean
   initialChallengeOnly: boolean
+  initialContestTimer: ContestTimer
 }
 
 type Tab = 'my-problems' | 'all-problems' | 'leaderboard' | 'add-problem'
 
-export default function PanitiaDashboard({ profile, initialProblems, initialSubmissions, isAdmin, initialChallengeOnly }: Props) {
+export default function PanitiaDashboard({ profile, initialProblems, initialSubmissions, isAdmin, initialChallengeOnly, initialContestTimer }: Props) {
   const [problems, setProblems] = useState<Problem[]>(initialProblems)
   const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions)
   const [activeTab, setActiveTab] = useState<Tab>('my-problems')
   const [loggingOut, setLoggingOut] = useState(false)
   const [challengeOnly, setChallengeOnly] = useState(initialChallengeOnly)
   const [togglingChallenge, setTogglingChallenge] = useState(false)
+  const [contestTimer, setContestTimer] = useState<ContestTimer>(initialContestTimer)
+  const [showTimerModal, setShowTimerModal] = useState(false)
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
 
@@ -56,9 +62,15 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
   }, [])
 
   const handleSettingsChange = useCallback((payload: { new: Record<string, unknown> }) => {
-    const row = payload.new as { key?: string; bool_value?: boolean }
+    const row = payload.new as { key?: string; bool_value?: boolean; ts_value?: string | null; int_value?: number | null }
     if (row.key === 'challenge_only' && typeof row.bool_value === 'boolean') {
       setChallengeOnly(row.bool_value)
+    }
+    if (row.key === 'contest_timer') {
+      setContestTimer({
+        startAt: row.ts_value ?? null,
+        durationSeconds: row.int_value ?? DEFAULT_CONTEST_DURATION_SECONDS,
+      })
     }
   }, [])
 
@@ -128,6 +140,21 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
+            <ContestCountdown
+              startAt={contestTimer.startAt}
+              durationSeconds={contestTimer.durationSeconds}
+              compact
+            />
+            {isAdmin && (
+              <button
+                onClick={() => setShowTimerModal(true)}
+                title="Atur timer kompetisi"
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 transition-colors"
+              >
+                <Timer className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Atur Timer</span>
+              </button>
+            )}
             {isAdmin && (
               <button
                 onClick={toggleChallengeOnly}
@@ -231,6 +258,13 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
           )}
         </div>
       </main>
+
+      <TimerControlModal
+        open={showTimerModal}
+        startAt={contestTimer.startAt}
+        durationSeconds={contestTimer.durationSeconds}
+        onClose={() => setShowTimerModal(false)}
+      />
     </div>
   )
 }
