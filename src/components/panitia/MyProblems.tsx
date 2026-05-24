@@ -150,11 +150,12 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
           >
             {/* Header */}
             <div
-              className={`flex items-start justify-between gap-4 flex-wrap ${canCollapse ? 'cursor-pointer select-none' : ''}`}
+              className={`space-y-2 ${canCollapse ? 'cursor-pointer select-none' : ''}`}
               onClick={canCollapse ? () => setUserToggled(prev => ({ ...prev, [problem.id]: !expanded })) : undefined}
             >
-              <div className="space-y-1.5 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
+              {/* Baris atas: meta (kiri) + kontrol (kanan) — selalu di satu baris */}
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap min-w-0">
                   <LevelBadge level={problem.level} />
                   <span className="text-xs text-gray-600 font-mono">{problem.points} pts</span>
                   {needsGradingCount > 0 && (
@@ -164,25 +165,27 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
                     </span>
                   )}
                 </div>
-                <h3 className="font-semibold text-white leading-snug">{problem.title}</h3>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-xs text-gray-600 whitespace-nowrap">
+                    {subs.length === 0 ? 'belum diambil tim' : `${subs.length} submission`}
+                  </span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setEditTarget(problem) }}
+                    className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-amber-300 bg-gray-800 hover:bg-gray-700 px-2.5 py-1.5 rounded-lg transition-colors"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    Edit
+                  </button>
+                  {canCollapse && (
+                    <ChevronDown
+                      className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${expanded ? '' : '-rotate-90'}`}
+                    />
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-3 flex-shrink-0">
-                <span className="text-xs text-gray-600">
-                  {subs.length === 0 ? 'belum diambil tim' : `${subs.length} submission`}
-                </span>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setEditTarget(problem) }}
-                  className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-amber-300 bg-gray-800 hover:bg-gray-700 px-2.5 py-1.5 rounded-lg transition-colors"
-                >
-                  <Pencil className="w-3.5 h-3.5" />
-                  Edit
-                </button>
-                {canCollapse && (
-                  <ChevronDown
-                    className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${expanded ? '' : '-rotate-90'}`}
-                  />
-                )}
-              </div>
+
+              {/* Baris bawah: judul soal — selalu full-width di baris sendiri */}
+              <h3 className="font-semibold text-white leading-snug">{problem.title}</h3>
             </div>
 
             {/* Submissions list */}
