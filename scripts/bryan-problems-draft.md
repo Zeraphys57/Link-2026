@@ -539,7 +539,7 @@ Sehingga pola `BATUAN` ditemukan mulai dari posisi ke-7.
 
 ---
 
-## HARD 1 — Sistem Penggajian Penambang  (1000 pts, hard)
+## HARD 1 — Sistem Penggajian Penambang  (700 pts, hard)
 
 ## Deskripsi
 Perusahaan tambang ingin menghitung gaji harian setiap penambang. Setiap penambang memiliki:
@@ -611,7 +611,7 @@ Rata-rata = (450000 + 400000 + 300000 + 280000) / 4 = 1430000 / 4 = 357500.
 
 ---
 
-## HARD 2 — Analisis Peta Tambang 2D  (1000 pts, hard)
+## HARD 2 — Analisis Peta Tambang 2D  (700 pts, hard)
 
 ## Deskripsi
 Tim eksplorasi memetakan area tambang ke dalam grid `N` baris × `M` kolom. Setiap sel pada grid berisi bilangan bulat yang menyatakan **nilai mineral** yang ditemukan di sel tersebut (bisa 0 jika tidak ada mineral).

@@ -60,8 +60,8 @@ export interface LeaderboardEntry {
 export const LEVEL_POINTS: Record<Level, number> = {
   easy: 100,
   medium: 300,
-  hard: 1000,
-  super: 50,
+  hard: 700,
+  super: 200,
 }
 
 export const LEVEL_LABELS: Record<Level, string> = {
