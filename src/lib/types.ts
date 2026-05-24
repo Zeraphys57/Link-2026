@@ -59,8 +59,8 @@ export interface LeaderboardEntry {
 
 export const LEVEL_POINTS: Record<Level, number> = {
   easy: 100,
-  medium: 250,
-  hard: 500,
+  medium: 300,
+  hard: 1000,
   super: 50,
 }
 

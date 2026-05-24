@@ -212,7 +212,7 @@ Satu bilangan bulat `N` yang menyatakan jumlah lapisan.
 
 ---
 
-## MEDIUM 1 — Peta Bawah Tanah  (250 pts, medium)
+## MEDIUM 1 — Peta Bawah Tanah  (300 pts, medium)
 
 ## Deskripsi
 Tim pemetaan tambang membuat peta wilayah bawah tanah dalam bentuk grid `N` baris × `M` kolom. Setiap kotak pada peta diisi salah satu karakter:
@@ -266,7 +266,7 @@ Total: 3 batuan, 4 mineral, 5 kosong. Baris 2 memiliki mineral terbanyak (3 mine
 
 ---
 
-## MEDIUM 2 — Robot Penjelajah Tambang  (250 pts, medium)
+## MEDIUM 2 — Robot Penjelajah Tambang  (300 pts, medium)
 
 ## Deskripsi
 Sebuah robot penjelajah diturunkan ke koordinat (0, 0) pada peta tambang. Robot menerima sebuah string instruksi yang terdiri dari karakter:
@@ -315,7 +315,7 @@ Robot kembali ke (0, 0) setelah 6 langkah.
 
 ---
 
-## MEDIUM 3 — Mineral Paling Sering Ditemukan  (250 pts, medium)
+## MEDIUM 3 — Mineral Paling Sering Ditemukan  (300 pts, medium)
 
 ## Deskripsi
 Tim survei mencatat setiap mineral yang ditemukan di lokasi tambang. Setelah seluruh data terkumpul, tim ingin tahu jenis mineral apa yang **paling sering muncul** dan berapa kali mineral tersebut ditemukan.
@@ -360,7 +360,7 @@ Kuarsa muncul 3 kali, Granit 2 kali, Basalt 1 kali. Yang paling sering adalah Ku
 
 ---
 
-## MEDIUM 4 — Kode Biner Penanda Tambang  (250 pts, medium)
+## MEDIUM 4 — Kode Biner Penanda Tambang  (300 pts, medium)
 
 ## Deskripsi
 Setiap terowongan di area tambang diberi kode pengenal berupa bilangan desimal. Untuk keperluan sistem otomasi, kode tersebut harus dikonversi ke dalam representasi **bilangan biner**.
@@ -394,7 +394,7 @@ String representasi biner dari N (tanpa angka 0 di depan, kecuali untuk N = 0).
 
 ---
 
-## MEDIUM 5 — Pencarian Sampel Mineral  (250 pts, medium)
+## MEDIUM 5 — Pencarian Sampel Mineral  (300 pts, medium)
 
 ## Deskripsi
 Sebuah laboratorium memiliki database `N` sampel batu mineral. Setiap sampel memiliki:
@@ -449,7 +449,7 @@ S003 Topas 8
 
 ---
 
-## MEDIUM 6 — Histogram Kedalaman Tambang  (250 pts, medium)
+## MEDIUM 6 — Histogram Kedalaman Tambang  (300 pts, medium)
 
 ## Deskripsi
 Tim survei mengumpulkan `N` data kedalaman titik pengeboran di area tambang (dalam meter). Untuk keperluan visualisasi laporan, data perlu dikelompokkan ke dalam empat kategori kedalaman:
@@ -500,7 +500,7 @@ SangatDalam (51+)  : **
 
 ---
 
-## MEDIUM 7 — Pencarian Pola Kode Tambang  (250 pts, medium)
+## MEDIUM 7 — Pencarian Pola Kode Tambang  (300 pts, medium)
 
 ## Deskripsi
 Setiap terowongan tambang diberi kode pengenal berupa string panjang. Tim keamanan ingin mengecek apakah suatu **pola pendek** muncul di dalam kode terowongan. Jika muncul, tampilkan posisi awal (1-indexed) di mana pola tersebut pertama kali ditemukan.
@@ -539,7 +539,7 @@ Sehingga pola `BATUAN` ditemukan mulai dari posisi ke-7.
 
 ---
 
-## HARD 1 — Sistem Penggajian Penambang  (500 pts, hard)
+## HARD 1 — Sistem Penggajian Penambang  (1000 pts, hard)
 
 ## Deskripsi
 Perusahaan tambang ingin menghitung gaji harian setiap penambang. Setiap penambang memiliki:
@@ -611,7 +611,7 @@ Rata-rata = (450000 + 400000 + 300000 + 280000) / 4 = 1430000 / 4 = 357500.
 
 ---
 
-## HARD 2 — Analisis Peta Tambang 2D  (500 pts, hard)
+## HARD 2 — Analisis Peta Tambang 2D  (1000 pts, hard)
 
 ## Deskripsi
 Tim eksplorasi memetakan area tambang ke dalam grid `N` baris × `M` kolom. Setiap sel pada grid berisi bilangan bulat yang menyatakan **nilai mineral** yang ditemukan di sel tersebut (bisa 0 jika tidak ada mineral).
