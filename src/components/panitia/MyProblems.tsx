@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { ClipboardCheck, ClipboardList, Clock, CheckCircle2, XCircle, Hourglass, PlayCircle, Pencil, RotateCcw, TimerOff } from 'lucide-react'
+import { ClipboardCheck, ClipboardList, Clock, CheckCircle2, XCircle, Hourglass, PlayCircle, Pencil, RotateCcw, TimerOff, ChevronDown } from 'lucide-react'
 import { CHALLENGE_DURATION_SECONDS } from '@/lib/types'
 import type { Problem, Submission } from '@/lib/types'
 import LevelBadge from '@/components/ui/LevelBadge'
@@ -29,6 +29,8 @@ function stateOf(s: Submission): SubmissionState {
 export default function MyProblems({ problems, submissions, isAdmin = false, onSubmissionsChange, onProblemUpdated }: Props) {
   const [gradeTarget, setGradeTarget] = useState<{ problem: Problem; submission: Submission } | null>(null)
   const [editTarget, setEditTarget] = useState<Problem | null>(null)
+  // User override per problem: true=expanded, false=collapsed. Absent = use default (expand if needs grading).
+  const [userToggled, setUserToggled] = useState<Record<string, boolean>>({})
 
   // Group submissions by problem.
   const subsByProblem = useMemo(() => {
@@ -80,6 +82,9 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
       {sortedProblems.map(problem => {
         const subs = subsByProblem.get(problem.id) ?? []
         const needsGradingCount = subs.filter(s => stateOf(s) === 'awaiting_grade').length
+        const canCollapse = subs.length > 0
+        const defaultExpanded = needsGradingCount > 0
+        const expanded = userToggled[problem.id] ?? defaultExpanded
 
         const cardBorder = needsGradingCount > 0 ? 'border-amber-500/50' : 'border-gray-800'
         const cardBg = needsGradingCount > 0 ? 'bg-amber-950/25' : 'bg-gray-900'
@@ -91,7 +96,10 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
             style={needsGradingCount > 0 ? { animation: 'rank1-pulse 3s ease-in-out infinite' } : undefined}
           >
             {/* Header */}
-            <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div
+              className={`flex items-start justify-between gap-4 flex-wrap ${canCollapse ? 'cursor-pointer select-none' : ''}`}
+              onClick={canCollapse ? () => setUserToggled(prev => ({ ...prev, [problem.id]: !expanded })) : undefined}
+            >
               <div className="space-y-1.5 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <LevelBadge level={problem.level} />
@@ -110,17 +118,22 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
                   {subs.length === 0 ? 'belum diambil tim' : `${subs.length} submission`}
                 </span>
                 <button
-                  onClick={() => setEditTarget(problem)}
+                  onClick={(e) => { e.stopPropagation(); setEditTarget(problem) }}
                   className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-amber-300 bg-gray-800 hover:bg-gray-700 px-2.5 py-1.5 rounded-lg transition-colors"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                   Edit
                 </button>
+                {canCollapse && (
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${expanded ? '' : '-rotate-90'}`}
+                  />
+                )}
               </div>
             </div>
 
             {/* Submissions list */}
-            {subs.length > 0 && (
+            {subs.length > 0 && expanded && (
               <div className="mt-4 pt-3 border-t border-gray-800/60 space-y-2">
                 {subs.map(sub => (
                   <SubmissionRow
