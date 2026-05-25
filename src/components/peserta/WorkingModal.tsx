@@ -4,6 +4,10 @@ import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { CheckCircle2, AlertTriangle, Terminal } from 'lucide-react'
+import CodeMirror from '@uiw/react-codemirror'
+import { cpp } from '@codemirror/lang-cpp'
+import { oneDark } from '@codemirror/theme-one-dark'
+import { EditorView } from '@codemirror/view'
 import { createClient } from '@/lib/supabase/client'
 import type { Problem, Submission } from '@/lib/types'
 import { CHALLENGE_DURATION_SECONDS } from '@/lib/types'
@@ -152,23 +156,43 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
           </div>
         </div>
 
-        {/* Answer input */}
+        {/* Answer input — CodeMirror editor (C) */}
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Terminal className="w-4 h-4 text-gray-400" />
-            <label className="text-sm font-medium text-gray-300">
-              Jawaban / Output
-            </label>
-            <span className="text-xs text-gray-600">wajib diisi sebelum mengumpulkan</span>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Terminal className="w-4 h-4 text-gray-400" />
+              <label className="text-sm font-medium text-gray-300">
+                Jawaban / Kode
+              </label>
+              <span className="text-xs text-gray-600">wajib diisi sebelum mengumpulkan</span>
+            </div>
+            <span className="text-[10px] font-bold tracking-wider text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 px-2 py-0.5 rounded">
+              C
+            </span>
           </div>
-          <textarea
-            value={answer}
-            onChange={e => setAnswer(e.target.value)}
-            placeholder="Tulis output atau solusi kamu di sini..."
-            className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono text-sm resize-y transition-colors disabled:opacity-60"
-            rows={6}
-            disabled={loading || (isChallenge && timeUp)}
-          />
+          <div className={`rounded-xl overflow-hidden border border-gray-700 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-colors ${
+            loading || (isChallenge && timeUp) ? 'opacity-60 pointer-events-none' : ''
+          }`}>
+            <CodeMirror
+              value={answer}
+              onChange={(value) => setAnswer(value)}
+              height="220px"
+              theme={oneDark}
+              extensions={[cpp(), EditorView.lineWrapping]}
+              placeholder="// Tulis kode C atau output kamu di sini..."
+              editable={!loading && !(isChallenge && timeUp)}
+              basicSetup={{
+                lineNumbers: true,
+                highlightActiveLine: true,
+                highlightActiveLineGutter: true,
+                bracketMatching: true,
+                closeBrackets: true,
+                autocompletion: true,
+                indentOnInput: true,
+                tabSize: 4,
+              }}
+            />
+          </div>
         </div>
 
         {/* Time-up notice (Challenge only) */}
