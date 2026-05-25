@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { CheckCircle2, AlertTriangle, Terminal } from 'lucide-react'
+import { CheckCircle2, AlertTriangle, Terminal, Save } from 'lucide-react'
 import CodeMirror from '@uiw/react-codemirror'
 import { cpp } from '@codemirror/lang-cpp'
 import { oneDark } from '@codemirror/theme-one-dark'
@@ -23,14 +23,48 @@ interface Props {
   onSubmitted: (updatedSubmission: Submission) => void
 }
 
+const DRAFT_KEY = (submissionId: string) => `link2026_draft_${submissionId}`
+
 export default function WorkingModal({ problem, submission, onClose, onSubmitted }: Props) {
   const [answer, setAnswer] = useState('')
   const [loading, setLoading] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [timeUp, setTimeUp] = useState(false)
+  const [draftRestored, setDraftRestored] = useState(false)
+  const [savedAt, setSavedAt] = useState<Date | null>(null)
 
   const isChallenge = problem.level === 'super'
+
+  // Load draft saat modal pertama kali mount untuk submission ini.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      const saved = window.localStorage.getItem(DRAFT_KEY(submission.id))
+      if (saved && saved.length > 0) {
+        setAnswer(saved)
+        setDraftRestored(true)
+      }
+    } catch {
+      // localStorage bisa di-disable (private mode dll) — abaikan
+    }
+  }, [submission.id])
+
+  // Persist setiap perubahan answer ke localStorage (sync, sub-ms, no debounce needed).
+  useEffect(() => {
+    if (typeof window === 'undefined' || submitted) return
+    try {
+      if (answer.length === 0) {
+        window.localStorage.removeItem(DRAFT_KEY(submission.id))
+        setSavedAt(null)
+      } else {
+        window.localStorage.setItem(DRAFT_KEY(submission.id), answer)
+        setSavedAt(new Date())
+      }
+    } catch {
+      // ignore quota / disabled storage
+    }
+  }, [answer, submission.id, submitted])
 
   // `auto` = dipanggil otomatis saat waktu Challenge habis: lewati validasi
   // jawaban kosong & konfirmasi, jawaban dikumpulkan apa adanya.
@@ -86,6 +120,9 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
         ? 'Waktu habis — jawaban otomatis dikumpulkan. Menunggu penilaian panitia.'
         : 'Jawaban berhasil dikumpulkan! Menunggu penilaian panitia.'
     )
+    try {
+      window.localStorage.removeItem(DRAFT_KEY(submission.id))
+    } catch {}
     setSubmitted(true)
     setTimeout(() => {
       onSubmitted(updatedSubmission)
@@ -158,7 +195,7 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
 
         {/* Answer input — CodeMirror editor (C) */}
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
             <div className="flex items-center gap-2">
               <Terminal className="w-4 h-4 text-gray-400" />
               <label className="text-sm font-medium text-gray-300">
@@ -166,10 +203,24 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
               </label>
               <span className="text-xs text-gray-600">wajib diisi sebelum mengumpulkan</span>
             </div>
-            <span className="text-[10px] font-bold tracking-wider text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 px-2 py-0.5 rounded">
-              C
-            </span>
+            <div className="flex items-center gap-2">
+              {savedAt && (
+                <span className="flex items-center gap-1 text-[10px] text-emerald-400/80" title={`Tersimpan otomatis di browser pukul ${savedAt.toLocaleTimeString()}`}>
+                  <Save className="w-3 h-3" />
+                  Tersimpan
+                </span>
+              )}
+              <span className="text-[10px] font-bold tracking-wider text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 px-2 py-0.5 rounded">
+                C
+              </span>
+            </div>
           </div>
+          {draftRestored && (
+            <div className="mb-2 flex items-center gap-2 text-xs text-amber-300/90 bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg">
+              <Save className="w-3.5 h-3.5 flex-shrink-0" />
+              <span>Draft sebelumnya dipulihkan dari browser. Lanjutkan dari posisi terakhir.</span>
+            </div>
+          )}
           <div className={`rounded-xl overflow-hidden border border-gray-700 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-colors ${
             loading || (isChallenge && timeUp) ? 'opacity-60 pointer-events-none' : ''
           }`}>
