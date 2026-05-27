@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>LINK 2026 — Buku Panduan Peserta</title>
+<style>
+  /* ===== A4 print setup ===== */
+  @page {
+    size: A4;
+    margin: 18mm 16mm 20mm 16mm;
+  }
+  @media print {
+    .no-print { display: none !important; }
+    body { background: #fff !important; }
+    .page { box-shadow: none !important; margin: 0 !important; }
+    a { color: inherit !important; text-decoration: none !important; }
+  }
+
+  :root {
+    --ink: #0f172a;
+    --ink-soft: #334155;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --line-strong: #cbd5e1;
+    --amber: #d97706;
+    --amber-soft: #fef3c7;
+    --bg: #f1f5f9;
+    --easy: #059669;
+    --easy-bg: #d1fae5;
+    --medium: #ea580c;
+    --medium-bg: #ffedd5;
+    --hard: #7c3aed;
+    --hard-bg: #ede9fe;
+    --challenge: #2563eb;
+    --challenge-bg: #dbeafe;
+    --danger: #dc2626;
+    --danger-bg: #fee2e2;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    font-size: 11pt;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* On-screen A4 simulation */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 18mm 16mm 20mm 16mm;
+    margin: 12mm auto;
+    background: #fff;
+    box-shadow: 0 10px 40px -8px rgba(15, 23, 42, 0.18);
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* ===== Typography ===== */
+  h1, h2, h3, h4 { color: var(--ink); margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+  h1 { font-size: 28pt; line-height: 1.1; }
+  h2 { font-size: 18pt; margin: 0 0 4mm 0; padding-bottom: 3mm; border-bottom: 2px solid var(--ink); }
+  h3 { font-size: 13pt; margin: 6mm 0 2mm 0; color: var(--ink); }
+  h4 { font-size: 11pt; margin: 4mm 0 1.5mm 0; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+  p { margin: 0 0 3mm 0; }
+  ul, ol { margin: 0 0 3mm 0; padding-left: 5mm; }
+  li { margin-bottom: 1.5mm; }
+  strong { color: var(--ink); font-weight: 700; }
+  code, .mono { font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace; font-size: 0.92em; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+
+  /* ===== Cover ===== */
+  .cover {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 25mm 18mm;
+  }
+  .cover-eyebrow {
+    font-size: 10pt;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #fbbf24;
+    font-weight: 600;
+  }
+  .cover h1 {
+    color: #fff;
+    font-size: 56pt;
+    line-height: 0.95;
+    margin: 6mm 0 4mm 0;
+    letter-spacing: -0.03em;
+  }
+  .cover h1 span { color: #fbbf24; }
+  .cover-sub {
+    color: #cbd5e1;
+    font-size: 14pt;
+    max-width: 120mm;
+    line-height: 1.4;
+  }
+  .cover-meta {
+    border-top: 1px solid rgba(255,255,255,0.18);
+    padding-top: 8mm;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6mm;
+    font-size: 9.5pt;
+    color: #94a3b8;
+  }
+  .cover-meta strong { color: #fff; display: block; font-size: 11pt; margin-bottom: 1mm; font-weight: 600; }
+  .cover-deco {
+    position: absolute;
+    right: -40mm;
+    top: 50mm;
+    width: 140mm;
+    height: 140mm;
+    border: 1px solid rgba(251, 191, 36, 0.15);
+    border-radius: 50%;
+  }
+  .cover-deco::after {
+    content: '';
+    position: absolute;
+    inset: 18mm;
+    border: 1px solid rgba(251, 191, 36, 0.1);
+    border-radius: 50%;
+  }
+
+  /* ===== Page header (non-cover) ===== */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8mm;
+    padding-bottom: 3mm;
+    border-bottom: 1px solid var(--line);
+    font-size: 9pt;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .page-header b { color: var(--amber); font-weight: 700; }
+  .page-footer {
+    position: absolute;
+    bottom: 10mm;
+    left: 16mm;
+    right: 16mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5pt;
+    color: var(--muted);
+    padding-top: 2mm;
+    border-top: 1px solid var(--line);
+  }
+
+  /* ===== TOC ===== */
+  .toc { list-style: none; padding: 0; margin: 6mm 0; }
+  .toc li {
+    display: flex;
+    align-items: baseline;
+    gap: 3mm;
+    padding: 3mm 0;
+    border-bottom: 1px dotted var(--line-strong);
+    font-size: 11.5pt;
+  }
+  .toc .num {
+    color: var(--amber);
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+    width: 12mm;
+  }
+  .toc .title { flex: 1; color: var(--ink); font-weight: 500; }
+  .toc .pg { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 10pt; }
+
+  /* ===== Components ===== */
+  .lead {
+    font-size: 13pt;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin-bottom: 6mm;
+    padding-left: 4mm;
+    border-left: 3px solid var(--amber);
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; }
+
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 5mm;
+    background: #fff;
+  }
+  .card-head {
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 2mm;
+  }
+  .card-big { font-size: 22pt; font-weight: 800; color: var(--ink); line-height: 1; letter-spacing: -0.02em; }
+  .card-sub { font-size: 9.5pt; color: var(--muted); margin-top: 1mm; }
+
+  /* Level badge */
+  .lvl {
+    display: inline-block;
+    padding: 1mm 3mm;
+    border-radius: 4px;
+    font-size: 9pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .lvl-easy { background: var(--easy-bg); color: var(--easy); }
+  .lvl-medium { background: var(--medium-bg); color: var(--medium); }
+  .lvl-hard { background: var(--hard-bg); color: var(--hard); }
+  .lvl-challenge { background: var(--challenge-bg); color: var(--challenge); }
+
+  /* Level card */
+  .level-card {
+    border-radius: 6px;
+    padding: 5mm;
+    border: 1px solid var(--line);
+  }
+  .level-card.easy { border-color: var(--easy); background: var(--easy-bg); }
+  .level-card.medium { border-color: var(--medium); background: var(--medium-bg); }
+  .level-card.hard { border-color: var(--hard); background: var(--hard-bg); }
+  .level-card.challenge { border-color: var(--challenge); background: var(--challenge-bg); }
+  .level-card .pts {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28pt;
+    font-weight: 800;
+    line-height: 1;
+    margin: 2mm 0;
+  }
+  .level-card.easy .pts { color: var(--easy); }
+  .level-card.medium .pts { color: var(--medium); }
+  .level-card.hard .pts { color: var(--hard); }
+  .level-card.challenge .pts { color: var(--challenge); }
+  .level-card .label { font-size: 10.5pt; font-weight: 700; }
+  .level-card .desc { font-size: 9pt; color: var(--ink-soft); margin-top: 2mm; line-height: 1.4; }
+
+  /* Step list */
+  .steps { list-style: none; padding: 0; counter-reset: step; margin: 4mm 0; }
+  .steps > li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 12mm 1fr;
+    gap: 4mm;
+    padding: 4mm 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .steps > li:last-child { border-bottom: 0; }
+  .steps > li::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18pt;
+    font-weight: 800;
+    color: var(--amber);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .steps h3 { margin: 0 0 1.5mm 0; font-size: 12pt; }
+  .steps p { margin: 0 0 2mm 0; color: var(--ink-soft); font-size: 10.5pt; }
+
+  /* Screenshot placeholder */
+  .shot {
+    border: 1px dashed var(--line-strong);
+    border-radius: 6px;
+    background: repeating-linear-gradient(45deg, #f8fafc 0 8px, #fff 8px 16px);
+    padding: 8mm 6mm;
+    text-align: center;
+    color: var(--muted);
+    font-size: 9pt;
+    font-style: italic;
+    margin: 3mm 0;
+  }
+  .shot strong { display: block; color: var(--ink-soft); font-style: normal; font-size: 9.5pt; margin-bottom: 1mm; }
+  .shot.tall { padding: 18mm 6mm; }
+
+  /* Callouts */
+  .note {
+    border-left: 4px solid var(--amber);
+    background: var(--amber-soft);
+    padding: 3mm 4mm;
+    border-radius: 0 4px 4px 0;
+    margin: 3mm 0;
+    font-size: 10pt;
+  }
+  .note.warn { border-left-color: var(--danger); background: var(--danger-bg); }
+  .note.ok { border-left-color: var(--easy); background: var(--easy-bg); }
+  .note strong { display: block; margin-bottom: 1mm; }
+
+  /* Login formula box */
+  .formula {
+    background: #0f172a;
+    color: #f8fafc;
+    border-radius: 6px;
+    padding: 5mm;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10pt;
+    line-height: 1.6;
+    margin: 3mm 0;
+  }
+  .formula .key { color: #fbbf24; }
+  .formula .comment { color: #64748b; }
+
+  /* FAQ */
+  .faq-item { padding: 4mm 0; border-bottom: 1px solid var(--line); }
+  .faq-item:last-child { border-bottom: 0; }
+  .faq-q {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 11pt;
+    margin-bottom: 1.5mm;
+    display: flex;
+    gap: 3mm;
+  }
+  .faq-q::before {
+    content: 'Q';
+    color: var(--amber);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .faq-a {
+    color: var(--ink-soft);
+    font-size: 10.5pt;
+    padding-left: 6mm;
+    line-height: 1.5;
+  }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 10pt; }
+  th { text-align: left; padding: 2.5mm 3mm; background: #0f172a; color: #fff; font-weight: 600; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.05em; }
+  td { padding: 2.5mm 3mm; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+
+  /* Print toolbar (screen only) */
+  .toolbar {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 100;
+    display: flex;
+    gap: 8px;
+    background: #0f172a;
+    padding: 8px 10px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px -8px rgba(0,0,0,0.4);
+  }
+  .toolbar button {
+    background: #fbbf24;
+    color: #0f172a;
+    border: 0;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .toolbar button:hover { background: #f59e0b; }
+  .toolbar .hint { color: #cbd5e1; font-size: 11px; align-self: center; padding: 0 4px; }
+</style>
+</head>
+<body>
+
+<div class="toolbar no-print">
+  <span class="hint">A4 · siap-cetak</span>
+  <button onclick="window.print()">Simpan ke PDF</button>
+</div>
+
+<!-- ============================================================
+     PAGE 1 — COVER
+     ============================================================ -->
+<section class="page cover">
+  <div>
+    <div class="cover-eyebrow">Buku Panduan Peserta</div>
+    <h1>LINK <span>2026</span></h1>
+    <div class="cover-sub">
+      Kompetisi pemrograman antar tim — selesaikan soal, kumpulkan poin, raih posisi teratas di leaderboard.
+    </div>
+  </div>
+
+  <div class="cover-deco"></div>
+
+  <div class="cover-meta" style="position: relative; z-index: 2;">
+    <div>
+      <strong>Edisi</strong>
+      Mei 2026 · v1.0
+    </div>
+    <div>
+      <strong>Untuk</strong>
+      Peserta — 24 tim
+    </div>
+    <div>
+      <strong>Format</strong>
+      Online · realtime
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PAGE 2 — DAFTAR ISI + OVERVIEW
+     ============================================================ -->
+<section class="page">
+  <div class="page-header"><span>LINK 2026 · <b>Panduan Peserta</b></span><span>Daftar Isi</span></div>
+
+  <h2>Daftar Isi</h2>
+  <ol class="toc">
+    <li><span class="num">01</span><span class="title">Sekilas LINK 2026 &amp; Jadwal</span><span class="pg">hal. 3</span></li>
+    <li><span class="num">02</span><span class="title">Aturan &amp; Mekanisme Poin</span><span class="pg">hal. 4</span></li>
+    <li><span class="num">03</span><span class="title">Cara Pakai Aplikasi — Step by Step</span><span class="pg">hal. 6</span></li>
+    <li><span class="num">04</span><span class="title">FAQ &amp; Troubleshooting</span><span class="pg">hal. 10</span></li>
+  </ol>
+
+  <div class="lead" style="margin-top: 10mm;">
+    Buku panduan ini dirancang untuk dibaca <strong>sebelum</strong> lomba dimulai. Simpan, baca santai, dan jadikan referensi cepat selama hari-H.
+  </div>
+
+  <div class="grid-3" style="margin-top: 6mm;">
+    <div class="card">
+      <div class="card-head">Total Tim</div>
+      <div class="card-big">24</div>
+      <div class="card-sub">2 anggota per tim</div>
+    </div>
+    <div class="card">
+      <div class="card-head">Soal Aktif</div>
+      <div class="card-big">2</div>
+      <div class="card-sub">maksimum per tim</div>
+    </div>
+    <div class="card">
+      <div class="card-head">Tier Soal</div>
+      <div class="card-big">3</div>
+      <div class="card-sub">Easy · Medium · Hard</div>
+    </div>
+  </div>
+
+  <div class="page-footer"><span>LINK 2026 — Panduan Peserta</span><span>2</span></div>
+</section>
+
+<!-- ============================================================
+     PAGE 3 — SEKILAS LINK 2026
+     ============================================================ -->
+<section class="page">
+  <div class="page-header"><span>Bagian <b>01</b></span><span>Sekilas &amp; Jadwal</span></div>
+
+  <h2>01 · Sekilas LINK 2026</h2>
+
+  <p>
+    <strong>LINK 2026</strong> adalah kompetisi pemrograman kompetitif berbasis tim. Tiap tim akan mengklaim soal dari papan, menyelesaikannya, mengirim jawaban dalam bahasa <strong>C</strong>, lalu menunggu koreksi panitia. Poin tim akan terus diperbarui di leaderboard secara realtime.
+  </p>
+
+  <h3>Format singkat</h3>
+  <ul>
+    <li><strong>Durasi:</strong> sesuai timer kontes yang diatur admin (default 4 jam) — countdown muncul di header aplikasi saat kontes dimulai.</li>
+    <li><strong>Tim:</strong> 2 orang per tim, 1 akun bersama. Boleh kerja sama di laptop yang sama atau terpisah.</li>
+    <li><strong>Soal:</strong> dirilis oleh panitia. Tiap tim bisa <em>melihat</em> semua soal yang dirilis, tapi hanya bisa <em>aktif</em> mengerjakan maksimal 2 soal sekaligus.</li>
+    <li><strong>Bahasa:</strong> jawaban dikumpulkan dalam C melalui editor di dalam aplikasi (CodeMirror, syntax highlighting tersedia).</li>
+    <li><strong>Koreksi:</strong> manual oleh panitia (bukan auto-judge). Verdict: <strong>Diterima</strong> (+poin penuh) atau <strong>Ditolak</strong> (0 poin).</li>
+  </ul>
+
+  <h3>Jadwal hari-H (template)</h3>
+  <table>
+    <thead><tr><th style="width: 28mm;">Waktu</th><th>Agenda</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">−30 min</td><td>Registrasi ulang &amp; login uji coba. Pastikan tim bisa masuk ke akun.</td></tr>
+      <tr><td class="mono">−10 min</td><td>Briefing aturan singkat oleh panitia.</td></tr>
+      <tr><td class="mono">00:00</td><td>Kontes dimulai. Timer di header mulai mundur. Papan soal terbuka.</td></tr>
+      <tr><td class="mono">+timer</td><td>Sepanjang kontes: claim → kerjakan → submit → tunggu koreksi → ulang.</td></tr>
+      <tr><td class="mono">End</td><td>Timer habis. Submission ditutup otomatis. Leaderboard final dikunci.</td></tr>
+      <tr><td class="mono">+30 min</td><td>Pengumuman pemenang &amp; sesi foto.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>Catatan</strong>
+    Jadwal pasti hari-H akan dikonfirmasi panitia via grup WhatsApp/Discord resmi paling lambat H-1.
+  </div>
+
+  <div class="page-footer"><span>LINK 2026 — Panduan Peserta</span><span>3</span></div>
+</section>
+
+<!-- ============================================================
+     PAGE 4 — ATURAN & MEKANISME POIN (1)
+     ============================================================ -->
+<section class="page">
+  <div class="page-header"><span>Bagian <b>02</b></span><span>Aturan &amp; Mekanisme Poin</span></div>
+
+  <h2>02 · Aturan &amp; Mekanisme Poin</h2>
+
+  <h3>Tier soal &amp; poin</h3>
+  <div class="grid-4">
+    <div class="level-card easy">
+      <div class="lvl lvl-easy">Easy</div>
+      <div class="pts">100</div>
+      <div class="label">poin</div>
+      <div class="desc">Konsep dasar. Bisa di-retry kalau Ditolak.</div>
+    </div>
+    <div class="level-card medium">
+      <div class="lvl lvl-medium">Medium</div>
+      <div class="pts">250</div>
+      <div class="label">poin</div>
+      <div class="desc">Logika menengah. Bisa di-retry kalau Ditolak.</div>
+    </div>
+    <div class="level-card hard">
+      <div class="lvl lvl-hard">Hard</div>
+      <div class="pts">500</div>
+      <div class="label">poin</div>
+      <div class="desc">Algoritma kompleks. Bisa di-retry kalau Ditolak.</div>
+    </div>
+    <div class="level-card challenge">
+      <div class="lvl lvl-challenge">Challenge</div>
+      <div class="pts">50</div>
+      <div class="label">poin · 30 min</div>
+      <div class="desc">Soal kilat. <strong>Sekali coba per tim.</strong> Timer mundur 30 menit.</div>
+    </div>
+  </div>
+
+  <div class="note warn" style="margin-top: 5mm;">
+    <strong>Penting — Aturan Challenge</strong>
+    Soal <strong>Challenge</strong> berbeda dari tiga tier lainnya: timer berjalan <em>mundur</em> 30 menit sejak diambil. Saat waktu habis, jawaban di editor akan <strong>otomatis dikumpulkan apa adanya</strong> (bahkan kosong). Setelah dicoba — diterima atau ditolak — soal Challenge <strong>tidak bisa diambil ulang</strong> oleh tim yang sama.
+  </div>
+
+  <h3>Batas soal aktif</h3>
+  <p>
+    Setiap tim bisa memegang <strong>maksimal 2 soal aktif</strong> dalam satu waktu. Soal disebut "aktif" kalau:
+  </p>
+  <ul>
+    <li>Sudah di-claim tapi belum di-submit (sedang dikerjakan), <em>atau</em></li>
+    <li>Sudah di-submit tapi belum dikoreksi panitia (status "menunggu koreksi").</li>
+  </ul>
+  <p>
+    Soal yang sedang menunggu koreksi tetap menghabiskan slot. Kalau slot penuh, papan soal akan menolak claim baru — selesaikan atau tunggu verdict dulu.
+  </p>
+
+  <div class="page-footer"><span>LINK 2026 — Panduan Peserta</span><span>4</span></div>
+</section>
+
+<!-- ============================================================
+     PAGE 5 — ATURAN & MEKANISME POIN (2)
+     ============================================================ -->
+<section class="page">
+  <div class="page-header"><span>Bagian <b>02</b></span><span>Aturan &amp; Mekanisme Poin</span></div>
+
+  <h3>Setelah submit</h3>
+  <p>Saat tim klik <strong>Submit</strong>, jawaban masuk antrian koreksi panitia. Ada dua kemungkinan verdict:</p>
+
+  <div class="grid-2">
+    <div class="level-card easy">
+      <div style="font-weight: 700; font-size: 11pt; margin-bottom: 1mm;">✓ Diterima</div>
+      <div style="font-size: 10pt; color: var(--ink-soft);">
+        Tim mendapat <strong>poin penuh</strong> sesuai tier soal. Soal selesai, slot aktif terbuka kembali, durasi pengerjaan dicatat untuk tiebreak.
+      </div>
+    </div>
+    <div class="level-card" style="border-color: var(--danger); background: var(--danger-bg);">
+      <div style="font-weight: 700; font-size: 11pt; margin-bottom: 1mm; color: var(--danger);">✗ Ditolak</div>
+      <div style="font-size: 10pt; color: var(--ink-soft);">
+        Tim dapat <strong>0 poin</strong> untuk submission itu. Soal Final (Easy/Medium/Hard) bisa <strong>di-claim ulang</strong> dan dicoba lagi. Soal Challenge <strong>tidak bisa</strong>.
+      </div>
+    </div>
+  </div>
+
+  <div class="note ok">
+    <strong>Cek Ulang</strong>
+    Panitia bisa melakukan cek ulang kalau ada permintaan dari tim — verdict baru menggantikan verdict lama. Hubungi panitia langsung kalau ada keberatan terhadap penilaian.
+  </div>
+
+  <h3>Leaderboard &amp; ranking</h3>
+  <p>Urutan tim ditentukan dengan dua kriteria, berurutan:</p>
+
+  <ol>
+    <li><strong>Total poin tertinggi</strong> — jumlah poin dari semua soal yang Diterima.</li>
+    <li><strong>Total durasi tercepat</strong> (tiebreak) — jumlah waktu pengerjaan semua soal Diterima.</li>
+  </ol>
+
+  <div class="card" style="background: #f8fafc;">
+    <div class="card-head">Contoh perhitungan</div>
+    <table style="margin: 0;">
+      <thead><tr><th>Tim</th><th>Soal Diterima</th><th>Total Poin</th><th>Total Durasi</th><th>Peringkat</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Alpha</strong></td><td>2 Easy + 1 Hard</td><td>700</td><td>92 min</td><td>2</td></tr>
+        <tr><td><strong>Bravo</strong></td><td>1 Medium + 1 Hard</td><td>750</td><td>108 min</td><td>1</td></tr>
+        <tr><td><strong>Charlie</strong></td><td>3 Easy + 1 Medium</td><td>550</td><td>76 min</td><td>3</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note warn" style="margin-top: 4mm;">
+    <strong>Anti-curang</strong>
+    Dilarang: berbagi jawaban antar tim, menggunakan akun tim lain, mengakses internet untuk mencari kunci jawaban spesifik soal lomba. Pelanggaran = diskualifikasi.
+  </div>
+
+  <div class="page-footer"><span>LINK 2026 — Panduan Peserta</span><span>5</span></div>
+</section>
+
+<!-- ============================================================
+     PAGE 6 — CARA PAKAI APLIKASI (LOGIN)
+     ============================================================ -->
+<section class="page">
+  <div class="page-header"><span>Bagian <b>03</b></span><span>Cara Pakai Aplikasi</span></div>
+
+  <h2>03 · Cara Pakai Aplikasi</h2>
+
+  <ol class="steps">
+    <li>
+      <div>
+        <h3>Login dengan nama tim</h3>
+        <p>Buka URL aplikasi yang dibagikan panitia. Di form login, pilih mode <strong>Tim</strong> (default), lalu isi nama tim dan password tim kamu.</p>
+
+        <div class="formula">
+          <span class="comment"># Format login peserta</span><br>
+          <span class="key">Nama Tim</span>     : nama tim resmi (contoh: <strong>linkKSP</strong>)<br>
+          <span class="key">Password</span>     : 5-digit-terakhir-NPM-1 + 5-digit-terakhir-NPM-2<br>
+          <br>
+          <span class="comment"># Contoh: NPM anggota = 2401234567 &amp; 2409876543</span><br>
+          <span class="comment"># Password = 34567 + 76543 = "3456776543"</span>
+        </div>
+
+        <div class="shot">
+          <strong>[ Screenshot: halaman Login ]</strong>
+          Form dengan field "Nama Tim" + "Password", tombol mata untuk show/hide password
+        </div>
+
+        <div class="note warn">
+          <strong>Hati-hati huruf besar/kecil</strong>
+          Sistem mengonversi nama tim dengan menghapus spasi &amp; karakter non-alfanumerik. Tapi lebih aman ketik nama tim persis seperti yang tertulis di kartu peserta.
+        </div>
+      </div>
+    </li>
+
+    <li>
+      <div>
+        <h3>Kenali dashboard peserta</h3>
+        <p>Setelah login, kamu akan masuk ke dashboard dengan tiga area utama:</p>
+        <ul>
+          <li><strong>Header:</strong> nama tim, total poin, timer kontes (countdown), dan tombol logout.</li>
+          <li><strong>Tab "Papan Soal":</strong> daftar semua soal yang dirilis panitia, difilter per tier.</li>
+          <li><strong>Tab "Leaderboard":</strong> ranking semua tim, realtime.</li>
+        </ul>
+
+        <div class="shot tall">
+          <strong>[ Screenshot: dashboard peserta — tab Papan Soal ]</strong>
+          Grid kartu soal dengan badge tier (warna berbeda per Easy/Medium/Hard/Challenge)
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="page-footer"><span>LINK 2026 — Panduan Peserta</span><span>6</span></div>
+</section>
+
+<!-- ============================================================
+     PAGE 7 — CARA PAKAI (CLAIM & KERJAKAN)
+     ============================================================ -->
+<section class="page">
+  <div class="page-header"><span>Bagian <b>03</b></span><span>Cara Pakai Aplikasi</span></div>
+
+  <ol class="steps" start="3" style="counter-reset: step 2;">
+    <li>
+      <div>
+        <h3>Claim soal</h3>
+        <p>Klik kartu soal di papan untuk membuka detail. Kamu bisa membaca soal lengkap dulu sebelum memutuskan untuk claim.</p>
+        <ul>
+          <li>Klik tombol <strong>Ambil Soal</strong> untuk claim. Timer pengerjaan langsung berjalan.</li>
+          <li>Soal Challenge: muncul peringatan <strong>30 menit countdown</strong>. Pikir matang sebelum claim.</li>
+          <li>Soal sudah pernah di-claim oleh tim lain? Tetap bisa kamu ambil — claim bersifat per-tim, bukan global.</li>
+        </ul>
+
+        <div class="shot">
+          <strong>[ Screenshot: modal Claim ]</strong>
+          Detail soal + tombol "Ambil Soal" + peringatan slot aktif
+        </div>
+      </div>
+    </li>
+
+    <li>
+      <div>
+        <h3>Kerjakan jawaban di editor</h3>
+        <p>Setelah claim, kartu soal berubah jadi tombol <strong>Kerjakan</strong>. Klik untuk membuka modal pengerjaan dengan editor kode di dalamnya.</p>
+        <ul>
+          <li>Editor: <strong>CodeMirror</strong> dengan syntax highlighting C dan tema gelap.</li>
+          <li><strong>Auto-save draft</strong> ke localStorage browser — jawaban tidak hilang kalau tab ditutup atau browser refresh.</li>
+          <li>Timer pengerjaan tampil di header modal: hitung-naik untuk Final, hitung-mundur untuk Challenge.</li>
+        </ul>
+
+        <div class="shot tall">
+          <strong>[ Screenshot: modal Kerjakan dengan editor CodeMirror ]</strong>
+          Editor kode dengan timer, deskripsi soal di samping, tombol Submit
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="page-footer"><span>LINK 2026 — Panduan Peserta</span><span>7</span></div>
+</section>
+
+<!-- ============================================================
+     PAGE 8 — CARA PAKAI (SUBMIT & TUNGGU)
+     ============================================================ -->
+<section class="page">
+  <div class="page-header"><span>Bagian <b>03</b></span><span>Cara Pakai Aplikasi</span></div>
+
+  <ol class="steps" start="5" style="counter-reset: step 4;">
+    <li>
+      <div>
+        <h3>Submit jawaban</h3>
+        <p>Kalau sudah yakin, klik <strong>Submit</strong>. Modal akan minta konfirmasi sekali untuk mencegah kecelakaan klik.</p>
+        <ul>
+          <li>Pastikan jawaban kamu <strong>kompilasi tanpa error</strong> di compiler lokal sebelum submit — panitia mengoreksi kode apa adanya.</li>
+          <li>Setelah submit, kartu soal pindah status jadi <strong>"Menunggu Koreksi"</strong>. Slot aktif tetap terpakai sampai verdict keluar.</li>
+          <li>Untuk soal Challenge: kalau timer habis sebelum kamu klik Submit, sistem akan <strong>auto-submit</strong> isi editor saat itu juga.</li>
+        </ul>
+
+        <div class="note">
+          <strong>Tip</strong>
+          Jangan menunggu sampai sempurna sebelum submit Final — kalau Ditolak, kamu tetap bisa coba lagi. Tapi durasi terus berjalan dan masuk tiebreak.
+        </div>
+      </div>
+    </li>
+
+    <li>
+      <div>
+        <h3>Tunggu verdict, pantau leaderboard</h3>
+        <p>Verdict muncul realtime di kartu soal segera setelah panitia mengoreksi:</p>
+        <ul>
+          <li><span class="lvl lvl-easy">✓ Diterima</span> — kartu jadi hijau, poin masuk leaderboard otomatis, slot aktif terbuka.</li>
+          <li><span class="lvl" style="background: var(--danger-bg); color: var(--danger);">✗ Ditolak</span> — kartu jadi merah. Final: klik untuk claim ulang. Challenge: kunci permanen.</li>
+        </ul>
+        <p>Notes dari panitia (kalau ada) muncul di detail kartu — biasanya berisi alasan penolakan atau pesan singkat.</p>
+
+        <div class="shot">
+          <strong>[ Screenshot: kartu soal dengan verdict Diterima &amp; Ditolak ]</strong>
+        </div>
+      </div>
+    </li>
+
+    <li>
+      <div>
+        <h3>Ulang sampai habis waktu</h3>
+        <p>Ulangi: claim → kerjakan → submit → tunggu. Pantau leaderboard untuk strategi — kadang ambil Hard yang berisiko lebih menguntungkan dari menumpuk Easy.</p>
+        <p>Saat timer kontes habis, papan soal akan dikunci otomatis. Submission yang masuk setelah waktu habis tidak akan dihitung.</p>
+      </div>
+    </li>
+  </ol>
+
+  <div class="page-footer"><span>LINK 2026 — Panduan Peserta</span><span>8</span></div>
+</section>
+
+<!-- ============================================================
+     PAGE 9 — STRATEGI SINGKAT (BONUS)
+     ============================================================ -->
+<section class="page">
+  <div class="page-header"><span>Bagian <b>03</b></span><span>Strategi &amp; Tips</span></div>
+
+  <h2>Strategi singkat</h2>
+
+  <div class="lead">
+    Lomba ini bukan cuma soal kecepatan ngoding — tapi juga soal <strong>pilihan soal</strong> dan <strong>manajemen slot</strong>. Beberapa tip dari pengalaman lomba sebelumnya.
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Bagi peran berdua</h4>
+      <p style="font-size: 10pt; color: var(--ink-soft); margin: 0;">
+        Satu orang fokus baca soal &amp; rancang algoritma, satu lagi ngetik. Atau bagi: yang satu pegang Easy/Medium berurutan, yang lain serang Hard.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Jangan paniik di Challenge</h4>
+      <p style="font-size: 10pt; color: var(--ink-soft); margin: 0;">
+        Challenge cuma 50 poin tapi nyita slot 30 menit penuh. Ambil hanya kalau yakin bisa — atau di sisa waktu untuk "mengisi" sambil pasrah.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Tutup soal yang nyangkut</h4>
+      <p style="font-size: 10pt; color: var(--ink-soft); margin: 0;">
+        Slot aktif penuh sama soal yang macet? Submit apa adanya (bahkan kalau salah) atau minta panitia <em>cek ulang</em> kalau Ditolak. Slot terbuka = bisa lanjut.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Pantau leaderboard</h4>
+      <p style="font-size: 10pt; color: var(--ink-soft); margin: 0;">
+        Lihat lawan terdekat: lebih unggul di poin atau di durasi? Kalau poin sama, kecepatan jadi penentu — jangan menunda submit.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Test sebelum submit</h4>
+      <p style="font-size: 10pt; color: var(--ink-soft); margin: 0;">
+        Edit di IDE lokal/online compiler dulu untuk pastikan kompilasi. Editor di app tidak menjalankan kode — itu cuma untuk submit.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Backup ke notepad</h4>
+      <p style="font-size: 10pt; color: var(--ink-soft); margin: 0;">
+        Walaupun ada auto-save draft, paste juga jawaban panjang ke notepad lokal sebagai jaga-jaga kalau koneksi hilang.
+      </p>
+    </div>
+  </div>
+
+  <div class="page-footer"><span>LINK 2026 — Panduan Peserta</span><span>9</span></div>
+</section>
+
+<!-- ============================================================
+     PAGE 10 — FAQ & TROUBLESHOOTING
+     ============================================================ -->
+<section class="page">
+  <div class="page-header"><span>Bagian <b>04</b></span><span>FAQ &amp; Troubleshooting</span></div>
+
+  <h2>04 · FAQ &amp; Troubleshooting</h2>
+
+  <div class="faq-item">
+    <div class="faq-q">Tim aku lupa password — gimana?</div>
+    <div class="faq-a">
+      Password = 5 digit terakhir NPM anggota 1 + 5 digit terakhir NPM anggota 2 (digabung tanpa spasi, urutan sesuai daftar peserta resmi). Kalau masih nggak bisa, hubungi panitia langsung — mereka bisa reset.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">"Nama tim atau password salah" padahal yakin benar?</div>
+    <div class="faq-a">
+      Cek: (1) caps lock tidak aktif, (2) nama tim sesuai dengan kartu peserta resmi (case-sensitive untuk huruf, tapi spasi/karakter aneh diabaikan sistem), (3) urutan NPM di password benar (anggota 1 dulu, lalu anggota 2). Kalau masih gagal, kontak panitia.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Koneksi internet putus di tengah lomba — jawabanku hilang?</div>
+    <div class="faq-a">
+      Tidak. Draft jawaban auto-save ke localStorage browser, jadi reload halaman tetap memunculkan jawaban kamu. Tapi kalau ganti browser/laptop, draft tidak ikut pindah — paste backup dari notepad.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Timer Challenge habis padahal aku belum klik Submit — gimana nasib jawabanku?</div>
+    <div class="faq-a">
+      Sistem akan otomatis menge-submit isi editor saat timer hit 0, walaupun jawabannya belum selesai. Setelah itu jawaban masuk antrian koreksi panitia seperti biasa, dan soal Challenge tersebut <strong>tidak bisa diambil ulang</strong>.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Aku claim soal tapi nggak yakin mau lanjut — bisa "batalkan claim"?</div>
+    <div class="faq-a">
+      Tidak ada tombol unclaim. Slot tetap terpakai sampai kamu submit (apa pun jawabannya). Kalau benar-benar buntu, submit jawaban kosong atau placeholder — kemungkinan besar Ditolak, tapi slot terbuka kembali untuk soal lain. Untuk Final, soal masih bisa di-claim ulang setelah ditolak.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Kenapa kartu soalku tertulis "Menunggu Koreksi" lama sekali?</div>
+    <div class="faq-a">
+      Koreksi dilakukan manual oleh panitia, jadi antrian bisa panjang di tengah lomba — apalagi soal Hard yang butuh waktu cek lebih lama. Bersabar dan lanjut kerjakan soal lain. Slot aktif memang terpakai, tapi tim lain juga dalam antrian yang sama.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Verdict-ku Ditolak tapi aku yakin jawaban benar — bisa banding?</div>
+    <div class="faq-a">
+      Bisa. Datang langsung ke meja panitia, jelaskan keberatan kamu, dan panitia bisa melakukan <strong>Cek Ulang</strong> — verdict baru akan menggantikan yang lama. Lakukan secepatnya, jangan tunggu sampai akhir.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Editor kode-ku lemot atau lag — kenapa?</div>
+    <div class="faq-a">
+      Editor CodeMirror umumnya ringan. Kalau lag, kemungkinan besar: (1) browser banyak tab/extension berat, (2) komputer memori penuh, (3) jawaban sangat panjang dengan syntax highlighting kompleks. Coba close tab lain, atau reload halaman (draft auto-save aman).
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Boleh pakai library/header non-standar di C?</div>
+    <div class="faq-a">
+      Pakailah hanya standard library C (<code>&lt;stdio.h&gt;</code>, <code>&lt;stdlib.h&gt;</code>, <code>&lt;string.h&gt;</code>, dst). Library non-standar tergantung apakah panitia bisa kompilasi — kalau gagal kompilasi, otomatis Ditolak. Aman: stick to ANSI C / C99.
+    </div>
+  </div>
+
+  <div class="page-footer"><span>LINK 2026 — Panduan Peserta</span><span>10</span></div>
+</section>
+
+<!-- ============================================================
+     PAGE 11 — FAQ LANJUTAN + PENUTUP
+     ============================================================ -->
+<section class="page">
+  <div class="page-header"><span>Bagian <b>04</b></span><span>FAQ &amp; Penutup</span></div>
+
+  <div class="faq-item">
+    <div class="faq-q">Anggota timku berhalangan hadir, boleh main sendirian?</div>
+    <div class="faq-a">
+      Boleh secara teknis — login tetap pakai akun tim. Tapi konfirmasi dulu ke panitia untuk transparansi. Tidak ada pengurangan poin untuk tim yang anggotanya tidak hadir.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Bisa pakai HP/tablet untuk lomba?</div>
+    <div class="faq-a">
+      UI didesain untuk desktop. Akses dari mobile masih jalan tapi editor kode tidak ideal di layar kecil. Direkomendasikan pakai laptop dengan keyboard fisik.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Boleh Googling saat lomba?</div>
+    <div class="faq-a">
+      Untuk syntax / dokumentasi library standar: boleh. Untuk mencari jawaban spesifik soal lomba (mis. paste teks soal ke Google atau ChatGPT): <strong>dilarang</strong>. Pelanggaran = diskualifikasi.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Ada hadiah?</div>
+    <div class="faq-a">
+      Detail hadiah diumumkan panitia di brief hari-H atau di grup resmi. Yang pasti: gelar juara, sertifikat, dan bragging rights LINK 2026.
+    </div>
+  </div>
+
+  <h3 style="margin-top: 12mm;">Kontak panitia</h3>
+  <p>Untuk pertanyaan teknis, banding verdict, atau emergency saat lomba:</p>
+  <ul>
+    <li>Hubungi panitia di meja registrasi (di lokasi lomba).</li>
+    <li>Grup WhatsApp/Discord resmi LINK 2026 (link dibagikan H-1).</li>
+    <li>Email: <code>panitia@link2026.team</code> (untuk hal non-mendesak).</li>
+  </ul>
+
+  <div class="note ok" style="margin-top: 8mm;">
+    <strong>Selamat berkompetisi! 🚀</strong>
+    LINK 2026 dirancang untuk seru, kompetitif, dan adil. Nikmati prosesnya — bug paling brutal pun bisa diselesaikan dengan tim yang kompak. Sampai jumpa di leaderboard.
+  </div>
+
+  <div style="text-align: center; margin-top: 20mm; color: var(--muted); font-size: 9pt;">
+    <div style="font-weight: 700; color: var(--ink); font-size: 11pt; letter-spacing: 0.05em;">LINK 2026</div>
+    <div>Buku Panduan Peserta · Edisi Mei 2026 · v1.0</div>
+    <div style="margin-top: 2mm;">Dokumen ini didistribusikan oleh panitia LINK 2026.</div>
+  </div>
+
+  <div class="page-footer"><span>LINK 2026 — Panduan Peserta</span><span>11</span></div>
+</section>
+
+</body>
+</html>
