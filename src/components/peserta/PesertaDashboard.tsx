@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { LogOut, LayoutGrid, Trophy } from 'lucide-react'
+import { LogOut, LayoutGrid, Trophy, Lock } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
 import ContestCountdown from '@/components/ui/ContestCountdown'
 import { createClient } from '@/lib/supabase/client'
@@ -19,15 +19,17 @@ interface Props {
   initialSubmissions: Submission[]
   initialChallengeOnly: boolean
   initialContestTimer: ContestTimer
+  initialLeaderboardHidden: boolean
 }
 
 type Tab = 'problems' | 'leaderboard'
 
-export default function PesertaDashboard({ profile, initialProblems, initialSubmissions, initialChallengeOnly, initialContestTimer }: Props) {
+export default function PesertaDashboard({ profile, initialProblems, initialSubmissions, initialChallengeOnly, initialContestTimer, initialLeaderboardHidden }: Props) {
   const [problems, setProblems] = useState<Problem[]>(initialProblems)
   const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions)
   const [challengeOnly, setChallengeOnly] = useState(initialChallengeOnly)
   const [contestTimer, setContestTimer] = useState<ContestTimer>(initialContestTimer)
+  const [leaderboardHidden, setLeaderboardHidden] = useState(initialLeaderboardHidden)
   const [activeTab, setActiveTab] = useState<Tab>('problems')
   const [loggingOut, setLoggingOut] = useState(false)
   const router = useRouter()
@@ -59,6 +61,9 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
     const row = payload.new as { key?: string; bool_value?: boolean; ts_value?: string | null; int_value?: number | null }
     if (row.key === 'challenge_only' && typeof row.bool_value === 'boolean') {
       setChallengeOnly(row.bool_value)
+    }
+    if (row.key === 'leaderboard_hidden' && typeof row.bool_value === 'boolean') {
+      setLeaderboardHidden(row.bool_value)
     }
     if (row.key === 'contest_timer') {
       setContestTimer({
@@ -136,8 +141,8 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
             <TabButton
               active={activeTab === 'leaderboard'}
               onClick={() => setActiveTab('leaderboard')}
-              icon={<Trophy className="w-4 h-4" />}
-              label="Papan Skor"
+              icon={leaderboardHidden ? <Lock className="w-4 h-4" /> : <Trophy className="w-4 h-4" />}
+              label="Leaderboard"
             />
           </div>
         </div>
@@ -158,11 +163,28 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
               onProblemsChange={setProblems}
               onSubmissionsChange={setSubmissions}
             />
+          ) : leaderboardHidden ? (
+            <LeaderboardLocked />
           ) : (
             <Leaderboard problems={problems} submissions={submissions} />
           )}
         </div>
       </main>
+    </div>
+  )
+}
+
+function LeaderboardLocked() {
+  return (
+    <div className="flex flex-col items-center justify-center text-center py-20 px-6">
+      <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mb-5">
+        <Lock className="w-7 h-7 text-amber-300" />
+      </div>
+      <h2 className="text-xl font-bold text-white mb-2">Leaderboard Dikunci Panitia</h2>
+      <p className="text-sm text-gray-400 max-w-md leading-relaxed">
+        Panitia sedang menyelesaikan koreksi jawaban. Posisi akhir akan diumumkan
+        sebentar lagi — bersabar, biar surprise!
+      </p>
     </div>
   )
 }

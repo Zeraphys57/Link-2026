@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { LogOut, ClipboardList, LayoutList, PlusCircle, Eye, EyeOff, Trophy, Timer } from 'lucide-react'
+import { LogOut, ClipboardList, LayoutList, PlusCircle, Eye, EyeOff, Trophy, Timer, Lock, Unlock } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
 import ContestCountdown from '@/components/ui/ContestCountdown'
 import { createClient } from '@/lib/supabase/client'
@@ -23,17 +23,20 @@ interface Props {
   isAdmin: boolean
   initialChallengeOnly: boolean
   initialContestTimer: ContestTimer
+  initialLeaderboardHidden: boolean
 }
 
 type Tab = 'my-problems' | 'all-problems' | 'leaderboard' | 'add-problem'
 
-export default function PanitiaDashboard({ profile, initialProblems, initialSubmissions, isAdmin, initialChallengeOnly, initialContestTimer }: Props) {
+export default function PanitiaDashboard({ profile, initialProblems, initialSubmissions, isAdmin, initialChallengeOnly, initialContestTimer, initialLeaderboardHidden }: Props) {
   const [problems, setProblems] = useState<Problem[]>(initialProblems)
   const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions)
   const [activeTab, setActiveTab] = useState<Tab>('my-problems')
   const [loggingOut, setLoggingOut] = useState(false)
   const [challengeOnly, setChallengeOnly] = useState(initialChallengeOnly)
   const [togglingChallenge, setTogglingChallenge] = useState(false)
+  const [leaderboardHidden, setLeaderboardHidden] = useState(initialLeaderboardHidden)
+  const [togglingLeaderboard, setTogglingLeaderboard] = useState(false)
   const [contestTimer, setContestTimer] = useState<ContestTimer>(initialContestTimer)
   const [showTimerModal, setShowTimerModal] = useState(false)
   const router = useRouter()
@@ -65,6 +68,9 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
     const row = payload.new as { key?: string; bool_value?: boolean; ts_value?: string | null; int_value?: number | null }
     if (row.key === 'challenge_only' && typeof row.bool_value === 'boolean') {
       setChallengeOnly(row.bool_value)
+    }
+    if (row.key === 'leaderboard_hidden' && typeof row.bool_value === 'boolean') {
+      setLeaderboardHidden(row.bool_value)
     }
     if (row.key === 'contest_timer') {
       setContestTimer({
@@ -108,6 +114,24 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
         : 'Soal Final kini terlihat oleh peserta.')
     }
     setTogglingChallenge(false)
+  }
+
+  const toggleLeaderboardHidden = async () => {
+    setTogglingLeaderboard(true)
+    const next = !leaderboardHidden
+    const { error } = await supabase
+      .from('app_settings')
+      .update({ bool_value: next, updated_at: new Date().toISOString() })
+      .eq('key', 'leaderboard_hidden')
+    if (error) {
+      toast.error('Gagal mengubah pengaturan.')
+    } else {
+      setLeaderboardHidden(next)
+      toast.success(next
+        ? 'Leaderboard dikunci dari peserta — biar surprise!'
+        : 'Leaderboard kini terlihat oleh peserta.')
+    }
+    setTogglingLeaderboard(false)
   }
 
   // Admin melihat & menilai/mengedit soal SEMUA panitia; panitia biasa hanya soal sendiri.
@@ -174,6 +198,25 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
                 </span>
               </button>
             )}
+            {isAdmin && (
+              <button
+                onClick={toggleLeaderboardHidden}
+                disabled={togglingLeaderboard}
+                title={leaderboardHidden
+                  ? 'Leaderboard disembunyikan dari peserta — klik untuk menampilkan'
+                  : 'Leaderboard terlihat peserta — klik untuk menyembunyikan'}
+                className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors disabled:opacity-50 ${
+                  leaderboardHidden
+                    ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 hover:bg-amber-500/25'
+                    : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700'
+                }`}
+              >
+                {leaderboardHidden ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+                <span className="hidden sm:inline">
+                  {leaderboardHidden ? 'Leaderboard dikunci' : 'Leaderboard terlihat'}
+                </span>
+              </button>
+            )}
             <div className="hidden sm:flex items-center gap-2.5">
               <span className="text-xs font-bold bg-amber-500/10 border border-amber-500/25 text-amber-300 px-3 py-1 rounded-full tracking-wide">
                 {isAdmin ? 'Admin' : 'Panitia'}
@@ -213,7 +256,7 @@ export default function PanitiaDashboard({ profile, initialProblems, initialSubm
               active={activeTab === 'leaderboard'}
               onClick={() => setActiveTab('leaderboard')}
               icon={<Trophy className="w-4 h-4" />}
-              label="Papan Skor"
+              label="Leaderboard"
             />
             <TabButton
               active={activeTab === 'add-problem'}
