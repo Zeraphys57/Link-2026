@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { CheckCircle2, XCircle, Clock, User, FileText, Terminal, Maximize2, Minimize2 } from 'lucide-react'
+import { CheckCircle2, XCircle, Clock, User, FileText, Terminal, Maximize2, ArrowLeft, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Problem, Submission } from '@/lib/types'
 import Modal from '@/components/ui/Modal'
@@ -200,28 +200,47 @@ export default function GradeModal({ problem, submission, onClose, onGraded }: P
       </div>
     </Modal>
 
-    {/* Tampilan fullscreen jawaban tim */}
+    {/* Popup fullscreen jawaban tim */}
     {answerFull && submission.answer && (
-      <div className="fixed inset-0 z-[60] flex flex-col bg-gray-950">
-        <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-gray-800 flex-shrink-0">
-          <div className="flex items-center gap-2 min-w-0">
-            <Terminal className="w-4 h-4 text-gray-400 flex-shrink-0" />
-            <span className="text-sm font-medium text-gray-300 truncate">
-              Jawaban Tim {submission.team_name}
-            </span>
+      <div
+        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-150"
+        onClick={() => setAnswerFull(false)}
+      >
+        <div
+          className="relative w-full h-full max-w-6xl mx-auto bg-gray-950 border border-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-gray-800 bg-gray-900/60 flex-shrink-0">
+            <div className="flex items-center gap-2 min-w-0">
+              <button
+                onClick={() => setAnswerFull(false)}
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 active:scale-[0.98] px-2.5 py-1.5 rounded-lg transition-all flex-shrink-0"
+                aria-label="Kembali"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Kembali</span>
+              </button>
+              <div className="flex items-center gap-2 min-w-0 ml-2">
+                <Terminal className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <span className="text-sm font-medium text-gray-300 truncate">
+                  Jawaban Tim {submission.team_name}
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={() => setAnswerFull(false)}
+              className="flex items-center justify-center w-9 h-9 text-gray-400 hover:text-white bg-gray-800 hover:bg-red-600 active:scale-95 rounded-lg transition-all flex-shrink-0"
+              aria-label="Tutup"
+              title="Tutup (Esc)"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
-          <button
-            onClick={() => setAnswerFull(false)}
-            className="flex items-center gap-1.5 text-sm font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 active:scale-[0.98] px-3 py-1.5 rounded-lg transition-all flex-shrink-0"
-          >
-            <Minimize2 className="w-4 h-4" />
-            Tutup
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto p-6">
-          <pre className="text-sm text-gray-100 font-mono whitespace-pre-wrap break-words leading-relaxed">
-            {submission.answer}
-          </pre>
+          <div className="flex-1 overflow-y-auto p-6">
+            <pre className="text-sm text-gray-100 font-mono whitespace-pre-wrap break-words leading-relaxed">
+              {submission.answer}
+            </pre>
+          </div>
         </div>
       </div>
     )}
