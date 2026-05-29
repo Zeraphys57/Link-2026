@@ -29,6 +29,16 @@ export default async function LoginPage() {
         <p className="text-center text-xs text-gray-600">
           Hanya akun yang telah terdaftar dapat masuk.
         </p>
+        <p className="text-center text-sm">
+          <a
+            href="/guidebook.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-amber-400 hover:text-amber-300 underline underline-offset-4 transition-colors"
+          >
+            Baca Buku Panduan Peserta
+          </a>
+        </p>
       </div>
     </div>
   )
