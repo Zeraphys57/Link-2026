@@ -131,7 +131,7 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
           </button>
         </div>
       ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+      <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
       {filteredProblems.map(problem => {
         const subs = subsByProblem.get(problem.id) ?? []
         const needsGradingCount = subs.filter(s => stateOf(s) === 'awaiting_grade').length
@@ -145,7 +145,7 @@ export default function MyProblems({ problems, submissions, isAdmin = false, onS
         return (
           <div
             key={problem.id}
-            className={`border ${cardBorder} ${cardBg} rounded-xl p-5 transition-all duration-200`}
+            className={`break-inside-avoid mb-4 border ${cardBorder} ${cardBg} rounded-xl p-5 transition-all duration-200`}
             style={needsGradingCount > 0 ? { animation: 'rank1-pulse 3s ease-in-out infinite' } : undefined}
           >
             {/* Header */}
