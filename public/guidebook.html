@@ -439,6 +439,39 @@
   .strat .s .no { font-family: var(--mono); font-size: 8pt; font-weight: 700; color: var(--spot); }
   .strat .s p { margin: 0; font-size: 9pt; color: var(--ink-2); }
 
+  /* ===== Do & Don't ===== */
+  .dodont { display: grid; grid-template-columns: 1fr 1fr; gap: 9mm; margin-top: 1mm; }
+  .dd-col { }
+  .dd-head {
+    display: flex; align-items: center; gap: 2.5mm;
+    font-family: var(--disp); font-weight: 800; font-size: 16pt;
+    text-transform: uppercase; letter-spacing: 0.01em;
+    padding-bottom: 2.5mm; border-bottom: 0.5mm solid currentColor;
+  }
+  .dd-col.do .dd-head { color: var(--t-easy); }
+  .dd-col.dont .dd-head { color: var(--spot-deep); }
+  .dd-head .glyph {
+    width: 6mm; height: 6mm; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10pt; color: var(--paper);
+  }
+  .dd-col.do .dd-head .glyph { background: var(--t-easy); }
+  .dd-col.dont .dd-head .glyph { background: var(--spot-deep); }
+  .dd-list { list-style: none; margin: 4mm 0 0; padding: 0; }
+  .dd-list li {
+    position: relative; padding: 0 0 3mm 7mm; margin-bottom: 3mm;
+    font-size: 9.5pt; line-height: 1.4; color: var(--ink-2);
+    border-bottom: 0.3mm solid var(--rule);
+  }
+  .dd-list li:last-child { border-bottom: 0; margin-bottom: 0; }
+  .dd-list li::before {
+    position: absolute; left: 0; top: 0;
+    font-family: var(--mono); font-weight: 700; font-size: 10pt;
+  }
+  .dd-col.do .dd-list li::before { content: '✓'; color: var(--t-easy); }
+  .dd-col.dont .dd-list li::before { content: '✗'; color: var(--spot-deep); }
+  .dd-list li strong { color: var(--ink); font-weight: 600; }
+
   /* ===== FAQ ===== */
   .qa { padding: 4mm 0; border-top: 0.4mm solid var(--rule-2); }
   .qa:first-of-type { border-top: 0.5mm solid var(--ink); }
@@ -525,7 +558,8 @@
           <div class="toc-row"><span class="n">01</span><span class="t">Sekilas LINK 2026 &amp; Jadwal</span><span class="p">hal. 03</span></div>
           <div class="toc-row"><span class="n">02</span><span class="t">Aturan &amp; Mekanisme Poin</span><span class="p">hal. 04</span></div>
           <div class="toc-row"><span class="n">03</span><span class="t">Cara Pakai Aplikasi</span><span class="p">hal. 06</span></div>
-          <div class="toc-row"><span class="n">04</span><span class="t">FAQ &amp; Troubleshooting</span><span class="p">hal. 10</span></div>
+          <div class="toc-row"><span class="n">04</span><span class="t">Do &amp; Don&rsquo;t — Ringkasan Aturan</span><span class="p">hal. 10</span></div>
+          <div class="toc-row"><span class="n">05</span><span class="t">FAQ &amp; Troubleshooting</span><span class="p">hal. 11</span></div>
         </div>
 
         <div class="specband">
@@ -595,7 +629,7 @@
         <div class="seclabel">Aturan Main &amp; Mekanisme Poin</div>
         <div class="snote">
           <span class="kick">Slot aktif</span>
-          Soal yang menunggu koreksi tetap menghabiskan slot. Selesaikan atau tunggu verdict sebelum klaim soal baru.
+          Soal yang menunggu koreksi tetap menghabiskan slot. Selesaikan atau tunggu hasil sebelum klaim soal baru.
         </div>
       </aside>
 
@@ -824,14 +858,14 @@
               <p>Kalau sudah yakin, klik <strong>Submit</strong>. Modal meminta konfirmasi sekali untuk mencegah klik tidak sengaja.</p>
               <ul>
                 <li>Pastikan jawaban <strong>kompilasi tanpa error</strong> di compiler lokal. Panitia mengoreksi kode apa adanya.</li>
-                <li>Setelah submit, kartu soal pindah ke status <strong>Menunggu Koreksi</strong>. Slot tetap terpakai sampai verdict keluar.</li>
+                <li>Setelah submit, kartu soal pindah ke status <strong>Menunggu Koreksi</strong>. Slot tetap terpakai sampai hasil keluar.</li>
               </ul>
             </div>
           </li>
           <li>
             <div>
               <h3>Tunggu hasil, pantau leaderboard</h3>
-              <p>Verdict muncul realtime di kartu soal segera setelah panitia mengoreksi:</p>
+              <p>Hasil muncul realtime di kartu soal segera setelah panitia mengoreksi:</p>
               <ul>
                 <li><span class="tag yes">Diterima</span> &nbsp;Kartu jadi hijau, poin masuk leaderboard otomatis, slot aktif terbuka.</li>
                 <li><span class="tag no">Ditolak</span> &nbsp;Kartu jadi merah. Klik untuk klaim ulang dan coba lagi.</li>
@@ -887,14 +921,75 @@
   </div>
 </section>
 
-<!-- ============================================================ 04 FAQ (1) -->
+<!-- ============================================================ 04 DO & DON'T -->
 <section class="page">
   <div class="pg">
-    <div class="runhead"><span>LINK 2026 · <span class="live">Panduan Peserta</span></span><span>04 · FAQ &amp; Troubleshooting</span></div>
+    <div class="runhead"><span>LINK 2026 · <span class="live">Panduan Peserta</span></span><span>04 · Do &amp; Don&rsquo;t</span></div>
 
     <div class="sheet">
       <aside class="rail">
         <div class="secno">04</div>
+        <div class="seclabel">Do &amp; Don&rsquo;t — Ringkasan Aturan</div>
+        <div class="snote">
+          <span class="kick">Sebelum mulai</span>
+          Satu halaman rangkuman. Kalau ragu di tengah lomba, balik ke sini dulu sebelum tanya panitia.
+        </div>
+      </aside>
+
+      <div class="main">
+        <h2>Do &amp; Don&rsquo;t</h2>
+        <p class="lead">Inti seluruh aturan dalam satu halaman. <strong style="color: var(--t-easy)">Hijau</strong> boleh dan dianjurkan, <strong style="color: var(--spot-deep)">merah</strong> jangan sampai dilakukan.</p>
+
+        <div class="dodont">
+          <div class="dd-col do">
+            <div class="dd-head"><span class="glyph">✓</span> Lakukan</div>
+            <ul class="dd-list">
+              <li>Login pakai <strong>nama tim</strong> + password gabungan NPM, persis seperti di kartu peserta.</li>
+              <li>Baca soal sampai paham sebelum klaim, karena klaim langsung memakai <strong>satu slot</strong>.</li>
+              <li><strong>Kompilasi &amp; tes</strong> jawaban di compiler lokal sebelum submit.</li>
+              <li>Submit lebih awal. Kalau Ditolak masih bisa diklaim ulang dan dicoba lagi.</li>
+              <li>Tutup soal yang macet untuk <strong>membebaskan slot</strong>, lalu lanjut soal lain.</li>
+              <li>Pantau leaderboard dan atur 2 slot aktif sesuai rasio poin-ke-waktu.</li>
+              <li>Backup jawaban panjang ke <strong>notepad / IDE lokal</strong> sebagai jaga-jaga.</li>
+              <li>Pakai standard library C (<code>&lt;stdio.h&gt;</code>, <code>&lt;stdlib.h&gt;</code>, <code>&lt;string.h&gt;</code>).</li>
+              <li>Minta panitia <strong>cek ulang</strong> kalau yakin hasil penilaian keliru.</li>
+            </ul>
+          </div>
+
+          <div class="dd-col dont">
+            <div class="dd-head"><span class="glyph">✗</span> Hindari</div>
+            <ul class="dd-list">
+              <li><strong>Berbagi jawaban</strong> antar tim. Berakibat diskualifikasi.</li>
+              <li>Memakai <strong>akun tim lain</strong>. Berakibat diskualifikasi.</li>
+              <li>Menempel teks soal ke <strong>Google / ChatGPT</strong> untuk cari jawaban. Berakibat diskualifikasi.</li>
+              <li>Memakai <strong>library non-standar</strong>. Kalau panitia gagal kompilasi, otomatis Ditolak.</li>
+              <li>Menunggu jawaban "sempurna" sebelum submit. Durasi terus berjalan dan masuk tiebreak.</li>
+              <li>Mengandalkan satu perangkat tanpa backup. Draft tidak ikut pindah antar browser / laptop.</li>
+              <li>Lomba serius lewat <strong>HP / tablet</strong>. Editor tidak ideal di layar kecil.</li>
+              <li>Membiarkan slot penuh oleh soal mati. Slot terkunci sampai kamu submit.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flag">
+          <span class="kick">Garis merah</span>
+          <p>Tiga larangan teratas (berbagi jawaban, akun tim lain, mencari kunci jawaban di internet) adalah pelanggaran berat. Sanksinya <strong>DISKUALIFIKASI</strong>, tanpa peringatan.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="folio"><span>Buku Panduan Peserta</span><span class="fno">10</span></div>
+  </div>
+</section>
+
+<!-- ============================================================ 05 FAQ (1) -->
+<section class="page">
+  <div class="pg">
+    <div class="runhead"><span>LINK 2026 · <span class="live">Panduan Peserta</span></span><span>05 · FAQ &amp; Troubleshooting</span></div>
+
+    <div class="sheet">
+      <aside class="rail">
+        <div class="secno">05</div>
         <div class="seclabel">Pertanyaan yang Sering Muncul</div>
         <div class="snote">
           <span class="kick">Buntu?</span>
@@ -928,18 +1023,18 @@
       </div>
     </div>
 
-    <div class="folio"><span>Buku Panduan Peserta</span><span class="fno">10</span></div>
+    <div class="folio"><span>Buku Panduan Peserta</span><span class="fno">11</span></div>
   </div>
 </section>
 
-<!-- ============================================================ 04 FAQ (2) + PENUTUP -->
+<!-- ============================================================ 05 FAQ (2) + PENUTUP -->
 <section class="page">
   <div class="pg">
-    <div class="runhead"><span>LINK 2026 · <span class="live">Panduan Peserta</span></span><span>04 · FAQ &amp; Penutup</span></div>
+    <div class="runhead"><span>LINK 2026 · <span class="live">Panduan Peserta</span></span><span>05 · FAQ &amp; Penutup</span></div>
 
     <div class="sheet">
       <aside class="rail">
-        <div class="secno">04</div>
+        <div class="secno">05</div>
         <div class="seclabel">FAQ Lanjutan</div>
         <div class="snote">
           <span class="kick">Banding</span>
@@ -978,7 +1073,7 @@
       </div>
     </div>
 
-    <div class="folio"><span>Buku Panduan Peserta</span><span class="fno">11</span></div>
+    <div class="folio"><span>Buku Panduan Peserta</span><span class="fno">12</span></div>
   </div>
 </section>
 
