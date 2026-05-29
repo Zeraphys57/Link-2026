@@ -71,6 +71,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // `guidebook` dikecualikan agar buku panduan (guidebook.html + folder
+    // guidebook-img/) bisa diakses publik tanpa login.
+    '/((?!_next/static|_next/image|favicon.ico|guidebook|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
