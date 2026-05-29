@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckCircle, Clock, Lock, RotateCcw, Users } from 'lucide-react'
+import { CheckCircle, Clock, Lock, MessageSquareText, RotateCcw, Users } from 'lucide-react'
 import type { Profile, Problem, Submission, Level } from '@/lib/types'
 import { CHALLENGE_DURATION_SECONDS } from '@/lib/types'
 import LevelBadge, {
@@ -53,6 +53,14 @@ export default function ProblemCard({ problem, profile, mySubmission, acceptedBy
 
   const ringClass = (state.kind === 'in_progress' || isAwaiting) ? levelRingClass(problem.level) : ''
 
+  // Catatan dari panitia setelah penilaian. Disimpan di submission, tapi pada
+  // kartu yang Ditolak state-nya kembali jadi 'available' — jadi baca langsung
+  // dari mySubmission, bukan dari state.
+  const gradedNote =
+    mySubmission?.notes && (mySubmission.verdict === 'accepted' || mySubmission.verdict === 'rejected')
+      ? { notes: mySubmission.notes, verdict: mySubmission.verdict }
+      : null
+
   const bgClass = isAccepted
     ? 'bg-emerald-950/30'
     : isAwaiting
@@ -94,6 +102,23 @@ export default function ProblemCard({ problem, profile, mySubmission, acceptedBy
         <div className="pt-2 border-t border-gray-800/80">
           <StatusRow state={state} onWork={onWork} level={problem.level} />
         </div>
+
+        {/* Catatan panitia — tampil setelah soal dinilai (diterima/ditolak) */}
+        {gradedNote && (
+          <div
+            className={`flex items-start gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] leading-snug border ${
+              gradedNote.verdict === 'accepted'
+                ? 'bg-emerald-500/5 border-emerald-500/15 text-emerald-200/80'
+                : 'bg-orange-500/5 border-orange-500/15 text-orange-200/90'
+            }`}
+          >
+            <MessageSquareText className="w-3 h-3 mt-0.5 flex-shrink-0 opacity-70" />
+            <span className="min-w-0">
+              <span className="font-semibold">Catatan panitia: </span>
+              <span className="italic break-words">{gradedNote.notes}</span>
+            </span>
+          </div>
+        )}
       </div>
     </div>
   )
