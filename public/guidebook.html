@@ -407,22 +407,22 @@
   .term .c { color: oklch(0.62 0.02 80); }
   .term strong { color: oklch(0.92 0.10 90); font-weight: 700; }
 
-  /* ===== Figure placeholders ===== */
+  /* ===== Figures (screenshots) ===== */
   .fig {
     position: relative;
     border: 0.4mm solid var(--rule-2);
-    background:
-      repeating-linear-gradient(135deg, var(--paper-2) 0 3mm, var(--paper) 3mm 6mm);
-    padding: 9mm 6mm; margin: 3mm 0; text-align: center;
+    background: var(--paper-2);
+    padding: 2.4mm; margin: 3mm 0;
   }
-  .fig.tall { padding: 16mm 6mm; }
+  .fig img { display: block; width: 100%; height: auto; border: 0.3mm solid var(--rule); }
   .fig::before, .fig::after {
     content: ''; position: absolute; width: 3mm; height: 3mm; border: 0.4mm solid var(--spot);
   }
-  .fig::before { left: 2mm; top: 2mm; border-right: 0; border-bottom: 0; }
-  .fig::after { right: 2mm; bottom: 2mm; border-left: 0; border-top: 0; }
+  .fig::before { left: -0.4mm; top: -0.4mm; border-right: 0; border-bottom: 0; }
+  .fig::after { right: -0.4mm; bottom: -0.4mm; border-left: 0; border-top: 0; }
+  .fig figcaption { margin-top: 2mm; line-height: 1.4; }
   .fig .cap { font-family: var(--mono); font-size: 7.5pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--spot-deep); }
-  .fig .desc { font-size: 8.5pt; color: var(--ink-3); margin-top: 1.5mm; font-style: italic; }
+  .fig .desc { display: block; font-size: 8.5pt; color: var(--ink-3); margin-top: 0.8mm; font-style: italic; }
 
   /* ===== Strategy grid ===== */
   .strat { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 0.5mm solid var(--ink); }
@@ -561,23 +561,20 @@
 
         <h3>Format singkat</h3>
         <ul>
-          <li><strong>Durasi.</strong> Mengikuti timer kontes yang diatur admin (default 4 jam). Countdown muncul di header aplikasi saat kontes dimulai.</li>
+          <li><strong>Durasi.</strong> Mengikuti timer kontes yang diatur admin (4 jam). Countdown muncul di header aplikasi saat kontes dimulai.</li>
           <li><strong>Tim.</strong> 2 orang per tim, 1 akun bersama. Boleh kerja di satu laptop atau terpisah.</li>
           <li><strong>Soal.</strong> Dirilis panitia. Semua soal yang dirilis bisa dilihat, tapi hanya 2 soal yang boleh aktif sekaligus.</li>
-          <li><strong>Bahasa.</strong> Jawaban dikirim dalam C lewat editor di aplikasi (CodeMirror, lengkap dengan syntax highlighting).</li>
-          <li><strong>Koreksi.</strong> Manual oleh panitia, bukan auto-judge. Verdict: <strong>Diterima</strong> (poin penuh) atau <strong>Ditolak</strong> (0 poin).</li>
+          <li><strong>Bahasa.</strong> Jawaban dikirim dalam C lewat kolom jawaban di website.</li>
+          <li><strong>Koreksi.</strong> Manual oleh panitia, bukan auto-judge. Note: <strong>Diterima</strong> (poin penuh) atau <strong>Ditolak</strong> (0 poin).</li>
         </ul>
 
-        <h3>Jadwal hari-H (template)</h3>
+        <h3>Jadwal Kompetisi</h3>
         <table>
           <thead><tr><th style="width:24mm;">Waktu</th><th>Agenda</th></tr></thead>
           <tbody>
-            <tr><td class="when">−30 min</td><td>Registrasi ulang &amp; login uji coba. Pastikan tim bisa masuk ke akun.</td></tr>
-            <tr><td class="when">−10 min</td><td>Briefing aturan singkat oleh panitia.</td></tr>
-            <tr><td class="when">00:00</td><td>Kontes dimulai. Timer di header mulai berjalan. Papan soal terbuka.</td></tr>
+            <tr><td class="when">04:00</td><td>Kontes dimulai. Timer di header mulai berjalan. Papan soal terbuka.</td></tr>
             <tr><td class="when">+timer</td><td>Sepanjang kontes: klaim, kerjakan, submit, tunggu koreksi, ulang.</td></tr>
             <tr><td class="when">End</td><td>Timer habis. Submission ditutup otomatis. Leaderboard final dikunci.</td></tr>
-            <tr><td class="when">+30 min</td><td>Pengumuman pemenang &amp; sesi foto.</td></tr>
           </tbody>
         </table>
       </div>
@@ -610,8 +607,8 @@
           <thead><tr><th style="width:34mm;">Tier</th><th style="width:22mm;">Poin</th><th>Karakter soal</th></tr></thead>
           <tbody>
             <tr><td><span class="dot easy"></span>Easy</td><td><span class="pts">100</span></td><td>Konsep dasar. Pemanasan untuk membangun momentum.</td></tr>
-            <tr><td><span class="dot med"></span>Medium</td><td><span class="pts">250</span></td><td>Logika menengah. Butuh struktur data atau algoritma sederhana.</td></tr>
-            <tr><td><span class="dot hard"></span>Hard</td><td><span class="pts">500</span></td><td>Algoritma kompleks. Risiko tinggi, imbalan poin terbesar.</td></tr>
+            <tr><td><span class="dot med"></span>Medium</td><td><span class="pts">300</span></td><td>Logika menengah. Butuh struktur data atau algoritma sederhana.</td></tr>
+            <tr><td><span class="dot hard"></span>Hard</td><td><span class="pts">700</span></td><td>Algoritma kompleks. Risiko tinggi, imbalan poin terbesar.</td></tr>
           </tbody>
         </table>
 
@@ -626,7 +623,7 @@
           <li>Sudah diklaim tapi belum disubmit (sedang dikerjakan), atau</li>
           <li>Sudah disubmit tapi belum dikoreksi panitia (status "menunggu koreksi").</li>
         </ul>
-        <p>Kalau kedua slot penuh, papan soal menolak klaim baru. Selesaikan satu soal atau tunggu verdict-nya dulu.</p>
+        <p>Kalau kedua slot penuh, tidak bisa klaim baru. Selesaikan satu soal atau tunggu hasil periksanya dulu.</p>
       </div>
     </div>
 
@@ -642,16 +639,16 @@
     <div class="sheet">
       <aside class="rail">
         <div class="secno">02</div>
-        <div class="seclabel">Verdict, Leaderboard &amp; Fair Play</div>
+        <div class="seclabel">Leaderboard &amp; Fair Play</div>
         <div class="snote">
           <span class="kick">Cek ulang</span>
-          Panitia bisa melakukan cek ulang atas permintaan tim. Verdict baru menggantikan verdict lama, jadi ajukan keberatan secepatnya.
+          Panitia bisa melakukan cek ulang atas permintaan tim. Hasil yang baru menggantikan hasil yang lama, jadi ajukan keberatan secepatnya.
         </div>
       </aside>
 
       <div class="main">
         <h3>Setelah submit</h3>
-        <p>Saat tim klik <strong>Submit</strong>, jawaban masuk antrian koreksi panitia. Ada dua kemungkinan verdict:</p>
+        <p>Saat tim klik <strong>Submit</strong>, jawaban masuk antrian koreksi panitia. Ada dua kemungkinan hasil:</p>
 
         <div class="verdicts">
           <div class="verdict yes">
@@ -660,7 +657,7 @@
           </div>
           <div class="verdict no">
             <div class="vh">Ditolak</div>
-            <p>Tim dapat 0 poin untuk submission itu. Soal bisa diklaim ulang dan dicoba lagi selama timer kontes berjalan.</p>
+            <p>Tim dapat 0 poin untuk submission tersebut. Soal bisa diklaim ulang dan dicoba lagi selama timer berjalan.</p>
           </div>
         </div>
 
@@ -674,15 +671,15 @@
         <table>
           <thead><tr><th>Tim</th><th>Soal Diterima</th><th>Poin</th><th>Durasi</th><th>Rank</th></tr></thead>
           <tbody>
-            <tr><td><strong>Bravo</strong></td><td>1 Medium + 1 Hard</td><td>750</td><td>108 min</td><td>1</td></tr>
-            <tr><td><strong>Alpha</strong></td><td>2 Easy + 1 Hard</td><td>700</td><td>92 min</td><td>2</td></tr>
-            <tr><td><strong>Charlie</strong></td><td>3 Easy + 1 Medium</td><td>550</td><td>76 min</td><td>3</td></tr>
+            <tr><td><strong>A</strong></td><td>1 Medium + 1 Hard</td><td>1000</td><td>92 min</td><td>1</td></tr>
+            <tr><td><strong>B</strong></td><td>3 Easy + 1 Hard</td><td>1000</td><td>108 min</td><td>2</td></tr>
+            <tr><td><strong>C</strong></td><td>3 Easy + 1 Medium</td><td>600</td><td>76 min</td><td>3</td></tr>
           </tbody>
         </table>
 
         <div class="flag">
-          <span class="kick">Penting · Anti-curang</span>
-          <p>Dilarang berbagi jawaban antar tim, memakai akun tim lain, atau mengakses internet untuk mencari kunci jawaban spesifik soal lomba. Pelanggaran berakibat <strong>diskualifikasi</strong>.</p>
+          <span class="kick">Penting · Anti-cheating</span>
+          <p>Dilarang berbagi jawaban antar tim, memakai akun tim lain, atau mengakses internet untuk mencari kunci jawaban spesifik soal lomba. Pelanggaran berakibat <strong>DISKUALIFIKASI</strong>.</p>
         </div>
       </div>
     </div>
@@ -699,7 +696,7 @@
     <div class="sheet">
       <aside class="rail">
         <div class="secno">03</div>
-        <div class="seclabel">Cara Pakai Aplikasi, Langkah demi Langkah</div>
+        <div class="seclabel">Cara Pakai Aplikasi, Step by Step</div>
         <div class="snote">
           <span class="kick">Hati-hati</span>
           Sistem mengabaikan spasi &amp; karakter non-alfanumerik pada nama tim, tapi tetap ketik persis seperti di kartu peserta agar aman.
@@ -712,7 +709,7 @@
           <li>
             <div>
               <h3>Login dengan nama tim</h3>
-              <p>Buka URL aplikasi yang dibagikan panitia. Di form login, pilih mode <strong>Tim</strong> (default), lalu isi nama tim dan password tim.</p>
+              <p>Buka URL aplikasi yang dibagikan panitia. Di form login, pilih mode <strong>Tim</strong>, lalu isi nama tim dan password tim.</p>
               <div class="term">
                 <span class="c"># Format login peserta</span><br>
                 <span class="k">Nama Tim</span>  : nama tim resmi (contoh: <strong>linkKSP</strong>)<br>
@@ -721,10 +718,10 @@
                 <span class="c"># Contoh: NPM = 2401234567 &amp; 2409876543</span><br>
                 <span class="c"># Password = 34567 + 76543 = "3456776543"</span>
               </div>
-              <div class="fig">
-                <div class="cap">Gbr. 1 · Halaman Login</div>
-                <div class="desc">Field "Nama Tim" + "Password", dengan tombol show/hide password.</div>
-              </div>
+              <figure class="fig">
+                <img src="guidebook-img/login.png" alt="Tangkapan layar halaman login LINK 2026" />
+                <figcaption><span class="cap">Gbr. 1 · Halaman Login</span><span class="desc">Field "Nama Tim" + "Password", dengan tombol show/hide password.</span></figcaption>
+              </figure>
             </div>
           </li>
           <li>
@@ -736,10 +733,10 @@
                 <li><strong>Tab Papan Soal.</strong> Semua soal yang dirilis panitia, difilter per tier.</li>
                 <li><strong>Tab Leaderboard.</strong> Ranking semua tim, realtime.</li>
               </ul>
-              <div class="fig tall">
-                <div class="cap">Gbr. 2 · Dashboard, Tab Papan Soal</div>
-                <div class="desc">Grid kartu soal dengan badge tier (warna berbeda per Easy / Medium / Hard).</div>
-              </div>
+              <figure class="fig">
+                <img src="guidebook-img/dashboard.png" alt="Tangkapan layar dashboard peserta, tab Papan Soal" />
+                <figcaption><span class="cap">Gbr. 2 · Dashboard, Tab Papan Soal</span><span class="desc">Grid kartu soal dengan badge tier (warna berbeda per Easy / Medium / Hard).</span></figcaption>
+              </figure>
             </div>
           </li>
         </ol>
@@ -775,10 +772,10 @@
                 <li>Klik <strong>Ambil Soal</strong> untuk klaim. Timer pengerjaan langsung berjalan.</li>
                 <li>Klaim memakai satu slot aktif. Pastikan masih ada slot kosong sebelum mengambil.</li>
               </ul>
-              <div class="fig">
-                <div class="cap">Gbr. 3 · Modal Klaim</div>
-                <div class="desc">Detail soal + tombol "Ambil Soal" + indikator slot aktif.</div>
-              </div>
+              <figure class="fig">
+                <img src="guidebook-img/modal-klaim.png" alt="Tangkapan layar modal Ambil Soal" />
+                <figcaption><span class="cap">Gbr. 3 · Modal Klaim</span><span class="desc">Detail soal + tombol "Ambil Soal" + indikator slot aktif.</span></figcaption>
+              </figure>
             </div>
           </li>
           <li>
@@ -786,14 +783,14 @@
               <h3>Kerjakan jawaban di editor</h3>
               <p>Setelah klaim, kartu soal berubah jadi tombol <strong>Kerjakan</strong>. Klik untuk membuka modal pengerjaan berisi editor kode.</p>
               <ul>
-                <li><strong>Editor.</strong> CodeMirror dengan syntax highlighting C dan tema gelap.</li>
+                <li><strong>Editor.</strong> Dengan syntax highlighting C.</li>
                 <li><strong>Auto-save draft</strong> ke localStorage browser. Jawaban tidak hilang walau tab ditutup atau halaman di-refresh.</li>
                 <li><strong>Timer pengerjaan</strong> tampil di header modal, dihitung sejak soal diklaim.</li>
               </ul>
-              <div class="fig tall">
-                <div class="cap">Gbr. 4 · Modal Kerjakan</div>
-                <div class="desc">Editor CodeMirror dengan timer, deskripsi soal di samping, dan tombol Submit.</div>
-              </div>
+              <figure class="fig">
+                <img src="guidebook-img/modal-kerjakan.png" alt="Tangkapan layar modal pengerjaan dengan editor kode" />
+                <figcaption><span class="cap">Gbr. 4 · Modal Kerjakan</span><span class="desc">Editor kode dengan timer, deskripsi soal di samping, dan tombol Submit.</span></figcaption>
+              </figure>
             </div>
           </li>
         </ol>
@@ -812,7 +809,7 @@
     <div class="sheet">
       <aside class="rail">
         <div class="secno">03</div>
-        <div class="seclabel">Submit, Verdict &amp; Ulang</div>
+        <div class="seclabel">Submit, Hasil &amp; Ulang</div>
         <div class="snote">
           <span class="kick">Tip</span>
           Jangan menunggu sempurna sebelum submit. Kalau Ditolak kamu tetap bisa coba lagi, tapi durasi terus berjalan dan masuk tiebreak.
@@ -833,7 +830,7 @@
           </li>
           <li>
             <div>
-              <h3>Tunggu verdict, pantau leaderboard</h3>
+              <h3>Tunggu hasil, pantau leaderboard</h3>
               <p>Verdict muncul realtime di kartu soal segera setelah panitia mengoreksi:</p>
               <ul>
                 <li><span class="tag yes">Diterima</span> &nbsp;Kartu jadi hijau, poin masuk leaderboard otomatis, slot aktif terbuka.</li>
@@ -873,15 +870,15 @@
 
       <div class="main">
         <h2>Strategi</h2>
-        <p class="lead">Dua slot aktif memaksamu memilih. Beberapa tip yang terbukti membantu di lomba sebelumnya.</p>
+        <p class="lead">Dua slot aktif memaksamu memilih. Beberapa tip yang terbukti membantu di lomba Competitive Programming.</p>
 
         <div class="strat">
-          <div class="s"><h4><span class="no">A</span> Bagi peran berdua</h4><p>Satu orang fokus baca soal &amp; rancang algoritma, satu lagi mengetik. Atau bagi jalur: satu menyapu Easy / Medium berurutan, satu menyerang Hard.</p></div>
-          <div class="s"><h4><span class="no">B</span> Kejar poin per slot</h4><p>Hanya 2 slot. Pilih soal dengan rasio poin-ke-waktu terbaik. Satu Hard (500) bisa lebih berharga dari menumpuk Easy kalau tim kuat di algoritma.</p></div>
+          <div class="s"><h4><span class="no">A</span> Bagi peran berdua</h4><p>Satu orang fokus baca soal &amp; rancang algoritma, satu lagi mengetik. Atau bagi jalur: satu kerjakan Easy / Medium berurutan, satu menyerang Hard.</p></div>
+          <div class="s"><h4><span class="no">B</span> Kejar poin per slot</h4><p>Hanya 2 slot. Pilih soal dengan rasio poin-ke-waktu terbaik. Satu Hard (700) bisa lebih berharga dari menumpuk Easy kalau tim kuat di algoritma.</p></div>
           <div class="s"><h4><span class="no">C</span> Tutup soal yang nyangkut</h4><p>Slot penuh oleh soal macet? Submit apa adanya untuk membuka slot, atau minta cek ulang kalau Ditolak. Slot terbuka berarti bisa lanjut.</p></div>
           <div class="s"><h4><span class="no">D</span> Pantau lawan terdekat</h4><p>Unggul di poin atau di durasi? Kalau poin sama, kecepatan jadi penentu. Jangan menunda submit yang sudah siap.</p></div>
           <div class="s"><h4><span class="no">E</span> Tes sebelum submit</h4><p>Kompilasi di IDE lokal atau online compiler dulu. Editor di aplikasi tidak menjalankan kode, hanya untuk mengirim.</p></div>
-          <div class="s"><h4><span class="no">F</span> Backup ke notepad</h4><p>Walau ada auto-save draft, tempel jawaban panjang ke notepad lokal sebagai jaga-jaga kalau koneksi hilang.</p></div>
+          <div class="s"><h4><span class="no">F</span> Backup ke notepad</h4><p>Walau ada auto-save draft, tempel jawaban panjang ke notepad/IDE lokal sebagai jaga-jaga kalau koneksi hilang.</p></div>
         </div>
       </div>
     </div>
@@ -901,7 +898,7 @@
         <div class="seclabel">Pertanyaan yang Sering Muncul</div>
         <div class="snote">
           <span class="kick">Buntu?</span>
-          Kalau masalahmu tidak terjawab di sini, datang langsung ke meja panitia. Lihat kontak di halaman terakhir.
+          Kalau masalahmu tidak terjawab di sini, angkat tangan untuk memanggil panitia.
         </div>
       </aside>
 
@@ -943,20 +940,20 @@
     <div class="sheet">
       <aside class="rail">
         <div class="secno">04</div>
-        <div class="seclabel">FAQ Lanjutan &amp; Kontak Panitia</div>
+        <div class="seclabel">FAQ Lanjutan</div>
         <div class="snote">
           <span class="kick">Banding</span>
-          Yakin verdict Ditolak salah? Datang ke meja panitia, jelaskan keberatan, dan minta cek ulang. Lakukan secepatnya.
+          Yakin Jawaban Ditolak padahal benar? Datang ke meja panitia, jelaskan keberatan, dan minta cek ulang. Lakukan secepatnya.
         </div>
       </aside>
 
       <div class="main">
         <div class="qa">
           <div class="q"><span class="mk">Q</span><span>Boleh pakai library non-standar di C?</span></div>
-          <div class="a">Gunakan hanya standard library C (<code>&lt;stdio.h&gt;</code>, <code>&lt;stdlib.h&gt;</code>, <code>&lt;string.h&gt;</code>, dst). Library non-standar bergantung pada apakah panitia bisa mengompilasinya; kalau gagal kompilasi, otomatis Ditolak. Aman: tetap di ANSI C / C99.</div>
+          <div class="a">Gunakan hanya standard library C (<code>&lt;stdio.h&gt;</code>, <code>&lt;stdlib.h&gt;</code>, <code>&lt;string.h&gt;</code>, dst). Library non-standar bergantung pada apakah panitia bisa mengompilasinya; kalau gagal kompilasi, otomatis Ditolak.</div>
         </div>
         <div class="qa">
-          <div class="q"><span class="mk">Q</span><span>Anggota timku berhalangan, boleh main sendirian?</span></div>
+          <div class="q"><span class="mk">Q</span><span>Anggota timku berhalangan, boleh sendirian?</span></div>
           <div class="a">Boleh secara teknis, login tetap pakai akun tim. Konfirmasi dulu ke panitia untuk transparansi. Tidak ada pengurangan poin untuk tim yang anggotanya tidak hadir.</div>
         </div>
         <div class="qa">
@@ -968,21 +965,14 @@
           <div class="a">Untuk syntax dan dokumentasi library standar: boleh. Untuk mencari jawaban spesifik soal lomba (menempel teks soal ke Google atau ChatGPT): <strong>dilarang</strong>. Pelanggaran berakibat diskualifikasi.</div>
         </div>
 
-        <h3>Kontak panitia</h3>
-        <ul>
-          <li>Meja registrasi di lokasi lomba (untuk hal mendesak saat hari-H).</li>
-          <li>Grup WhatsApp / Discord resmi LINK 2026 (tautan dibagikan H-1).</li>
-          <li>Email <code>panitia@link2026.team</code> untuk hal non-mendesak.</li>
-        </ul>
-
         <div class="closing">
           <span class="kick">Selamat berkompetisi</span>
-          <p>LINK 2026 dirancang untuk seru, kompetitif, dan adil. Nikmati prosesnya: bug paling brutal pun bisa diselesaikan tim yang kompak. Sampai jumpa di leaderboard.</p>
+          <p>LINK 2026 dirancang untuk seru, kompetitif, dan adil. Nikmati prosesnya: bug paling susah pun bisa diselesaikan tim yang kompak. Sampai jumpa di leaderboard.</p>
         </div>
 
         <div class="colophon">
           <div class="big">LINK 2026</div>
-          Buku Panduan Peserta · Edisi Mei 2026 · v1.0<br>
+          Buku Panduan Peserta<br>
           Didistribusikan oleh panitia LINK 2026
         </div>
       </div>
