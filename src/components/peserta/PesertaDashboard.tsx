@@ -9,6 +9,7 @@ import type { Profile, Problem, Submission, ContestTimer } from '@/lib/types'
 import { DEFAULT_CONTEST_DURATION_SECONDS } from '@/lib/types'
 import ProblemBoard from './ProblemBoard'
 import Leaderboard from './Leaderboard'
+import SlotStatus from './SlotStatus'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import { useIdleLogout } from '@/lib/useIdleLogout'
@@ -36,6 +37,21 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
   const supabase = useMemo(() => createClient(), [])
 
   useIdleLogout()
+
+  // Slot aktif tim: baris submission milik tim dengan verdict belum keluar.
+  // Definisinya sama dengan limit yang ditegakkan ClaimModal (maks 2).
+  const { working, awaiting } = useMemo(() => {
+    let working = 0
+    let awaiting = 0
+    if (profile.team_name) {
+      for (const s of submissions) {
+        if (s.team_name !== profile.team_name || s.verdict !== null) continue
+        if (s.submitted_at) awaiting++
+        else working++
+      }
+    }
+    return { working, awaiting }
+  }, [submissions, profile.team_name])
 
   const handleProblemChange = useCallback((payload: { eventType: string; new: Record<string, unknown>; old: Record<string, unknown> }) => {
     if (payload.eventType === 'UPDATE') {
@@ -110,6 +126,7 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
               durationSeconds={contestTimer.durationSeconds}
               compact
             />
+            <SlotStatus working={working} awaiting={awaiting} />
             <div className="hidden sm:flex items-center gap-2.5">
               <span className="text-xs font-bold bg-amber-500/10 border border-amber-500/25 text-amber-300 px-3 py-1 rounded-full tracking-wide">
                 Peserta
