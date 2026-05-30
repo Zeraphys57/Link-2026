@@ -53,6 +53,9 @@ export default function TeamDetailModal({ open, teamName, problems, submissions,
   const totalPoints = [...bestPerProblem.values()].reduce((sum, s) => sum + (s.points_awarded ?? 0), 0)
   const totalDuration = [...bestPerProblem.values()].reduce((sum, s) => sum + (s.duration_seconds ?? 0), 0)
 
+  const totalGraded = accepted.length + rejected.length
+  const accuracy = totalGraded > 0 ? Math.round(accepted.length / totalGraded * 100) : null
+
   // Urut: in-progress → pending → rejected → accepted, dalam tiap grup terbaru duluan.
   const sortedSubs = [...teamSubs].sort((a, b) => {
     const cmp = STATE_RANK[stateOf(a)] - STATE_RANK[stateOf(b)]
@@ -71,12 +74,21 @@ export default function TeamDetailModal({ open, teamName, problems, submissions,
           <StatCard label="Sedang Aktif" value={inProgress.length} tone="blue" />
         </div>
 
-        {/* Total points + duration */}
+        {/* Total points + accuracy + duration */}
         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 flex items-center justify-between gap-4">
           <div>
             <div className="text-[10px] text-yellow-600 uppercase tracking-widest font-bold">Total Poin</div>
             <div className="text-3xl font-black text-yellow-300 tabular-nums leading-none mt-1">{totalPoints}</div>
           </div>
+          {accuracy !== null && (
+            <div className="text-center">
+              <div className="text-[10px] text-yellow-600 uppercase tracking-widest font-medium">Winrate</div>
+              <div className="text-2xl font-black tabular-nums leading-none mt-1" style={{ color: accuracy >= 70 ? '#86efac' : accuracy >= 50 ? '#fcd34d' : '#fca5a5' }}>
+                {accuracy}%
+              </div>
+              <div className="text-[10px] text-yellow-700 mt-0.5">{accepted.length}/{totalGraded}</div>
+            </div>
+          )}
           <div className="text-right">
             <div className="text-[10px] text-yellow-700 uppercase tracking-widest font-medium">Total Durasi</div>
             <div className="text-sm text-yellow-500 tabular-nums mt-1.5 flex items-center gap-1 justify-end">

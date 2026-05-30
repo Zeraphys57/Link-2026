@@ -15,6 +15,7 @@ interface Props {
   // Sesi Challenge: kalau true, peserta hanya melihat soal Challenge — soal Final
   // (easy/medium/hard) disembunyikan. Dikontrol admin lewat tabel app_settings.
   challengeOnly: boolean
+  contestEnded: boolean
   onProblemsChange: (problems: Problem[]) => void
   onSubmissionsChange: (submissions: Submission[]) => void
 }
@@ -45,7 +46,7 @@ const LEVEL_ICONS = {
   super: Crown,
 }
 
-export default function ProblemBoard({ problems, submissions, profile, challengeOnly, onSubmissionsChange }: Props) {
+export default function ProblemBoard({ problems, submissions, profile, challengeOnly, contestEnded, onSubmissionsChange }: Props) {
   const [claimTarget, setClaimTarget] = useState<Problem | null>(null)
   const [workingTarget, setWorkingTarget] = useState<Problem | null>(null)
 
@@ -111,6 +112,7 @@ export default function ProblemBoard({ problems, submissions, profile, challenge
                   profile={profile}
                   mySubmission={myLatestByProblem.get(problem.id)}
                   acceptedByOtherTeams={acceptedOtherCountByProblem.get(problem.id)?.size ?? 0}
+                  contestEnded={contestEnded}
                   onClaim={() => setClaimTarget(problem)}
                   onWork={() => setWorkingTarget(problem)}
                 />
@@ -128,6 +130,7 @@ export default function ProblemBoard({ problems, submissions, profile, challenge
             claimTarget.level === 'super' &&
             myLatestByProblem.get(claimTarget.id) != null
           }
+          contestEnded={contestEnded}
           onClose={() => setClaimTarget(null)}
           onClaimed={(newSubmission) => {
             onSubmissionsChange([newSubmission, ...submissions])
@@ -140,6 +143,7 @@ export default function ProblemBoard({ problems, submissions, profile, challenge
         <WorkingModal
           problem={workingTarget}
           submission={myLatestByProblem.get(workingTarget.id)!}
+          contestEnded={contestEnded}
           onClose={() => setWorkingTarget(null)}
           onSubmitted={(updatedSubmission) => {
             onSubmissionsChange(submissions.map(s => s.id === updatedSubmission.id ? updatedSubmission : s))

@@ -40,6 +40,12 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
 
   // Slot aktif tim: baris submission milik tim dengan verdict belum keluar.
   // Definisinya sama dengan limit yang ditegakkan ClaimModal (maks 2).
+  const contestEnded = useMemo(() => {
+    if (!contestTimer.startAt) return false
+    const endAt = new Date(contestTimer.startAt).getTime() + contestTimer.durationSeconds * 1000
+    return Date.now() > endAt
+  }, [contestTimer])
+
   const { working, awaiting } = useMemo(() => {
     let working = 0
     let awaiting = 0
@@ -177,6 +183,7 @@ export default function PesertaDashboard({ profile, initialProblems, initialSubm
               submissions={submissions}
               profile={profile}
               challengeOnly={challengeOnly}
+              contestEnded={contestEnded}
               onProblemsChange={setProblems}
               onSubmissionsChange={setSubmissions}
             />

@@ -19,13 +19,14 @@ import toast from 'react-hot-toast'
 interface Props {
   problem: Problem
   submission: Submission
+  contestEnded?: boolean
   onClose: () => void
   onSubmitted: (updatedSubmission: Submission) => void
 }
 
 const DRAFT_KEY = (submissionId: string) => `link2026_draft_${submissionId}`
 
-export default function WorkingModal({ problem, submission, onClose, onSubmitted }: Props) {
+export default function WorkingModal({ problem, submission, contestEnded = false, onClose, onSubmitted }: Props) {
   const [answer, setAnswer] = useState('')
   const [loading, setLoading] = useState(false)
   const [confirming, setConfirming] = useState(false)
@@ -246,6 +247,19 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
           </div>
         </div>
 
+        {/* Contest ended notice */}
+        {contestEnded && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-red-300">Kompetisi Sudah Berakhir</p>
+              <p className="text-sm text-red-400/80 mt-1">
+                Waktu kompetisi telah habis. Jawaban tidak bisa dikumpulkan lagi.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Time-up notice (Challenge only) */}
         {isChallenge && timeUp && (
           <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-start gap-3">
@@ -292,11 +306,13 @@ export default function WorkingModal({ problem, submission, onClose, onSubmitted
           )}
           <button
             onClick={() => handleSubmit()}
-            disabled={loading || (isChallenge && timeUp)}
+            disabled={loading || (isChallenge && timeUp) || contestEnded}
             className="btn-success flex items-center gap-2 px-6 active:scale-[0.98]"
           >
             <CheckCircle2 className="w-4 h-4" />
-            {isChallenge && timeUp
+            {contestEnded
+              ? 'Kompetisi Selesai'
+              : isChallenge && timeUp
               ? 'Waktu Habis'
               : loading
               ? 'Mengumpulkan...'

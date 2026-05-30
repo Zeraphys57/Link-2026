@@ -16,11 +16,12 @@ interface Props {
   // true = soal Challenge yang sudah pernah dicoba tim ini. Modal tetap bisa
   // dibuka untuk membaca soal, tapi tombol "Ambil Soal" dinonaktifkan.
   lockedChallenge?: boolean
+  contestEnded?: boolean
   onClose: () => void
   onClaimed: (submission: Submission) => void
 }
 
-export default function ClaimModal({ problem, profile, lockedChallenge = false, onClose, onClaimed }: Props) {
+export default function ClaimModal({ problem, profile, lockedChallenge = false, contestEnded = false, onClose, onClaimed }: Props) {
   const [loading, setLoading] = useState(false)
 
   const handleClaim = async () => {
@@ -133,7 +134,13 @@ export default function ClaimModal({ problem, profile, lockedChallenge = false, 
           </div>
         </div>
 
-        {lockedChallenge ? (
+        {contestEnded ? (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+            <p className="text-sm text-red-300">
+              <strong>Kompetisi sudah berakhir.</strong> Soal tidak bisa diambil lagi. Kamu tetap bisa membaca soalnya di sini.
+            </p>
+          </div>
+        ) : lockedChallenge ? (
           /* Soal Challenge yang sudah pernah dicoba — hanya bisa dibaca */
           <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
             <p className="text-sm text-red-300">
@@ -167,11 +174,11 @@ export default function ClaimModal({ problem, profile, lockedChallenge = false, 
           </button>
           <button
             onClick={handleClaim}
-            disabled={loading || lockedChallenge}
+            disabled={loading || lockedChallenge || contestEnded}
             className="btn-primary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Zap className="w-4 h-4" />
-            {lockedChallenge ? 'Tidak bisa diambil lagi' : loading ? 'Mengambil...' : 'Ambil Soal'}
+            {contestEnded ? 'Kompetisi Selesai' : lockedChallenge ? 'Tidak bisa diambil lagi' : loading ? 'Mengambil...' : 'Ambil Soal'}
           </button>
         </div>
       </div>

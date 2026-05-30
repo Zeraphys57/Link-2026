@@ -16,6 +16,7 @@ interface Props {
   profile: Profile
   mySubmission: Submission | undefined
   acceptedByOtherTeams: number
+  contestEnded?: boolean
   onClaim: () => void
   onWork: () => void
 }
@@ -34,7 +35,7 @@ function deriveState(submission: Submission | undefined, profileId: string): Car
   return { kind: 'in_progress', submission, isMyUser: submission.user_id === profileId }
 }
 
-export default function ProblemCard({ problem, profile, mySubmission, acceptedByOtherTeams, onClaim, onWork }: Props) {
+export default function ProblemCard({ problem, profile, mySubmission, acceptedByOtherTeams, contestEnded = false, onClaim, onWork }: Props) {
   const state = deriveState(mySubmission, profile.id)
 
   const isAvailable = state.kind === 'available'
@@ -70,10 +71,10 @@ export default function ProblemCard({ problem, profile, mySubmission, acceptedBy
   return (
     <div
       className={`relative ${bgClass} border ${baseBorder} ${ringClass} rounded-xl overflow-hidden transition-all duration-250 ${
-        isAvailable ? `cursor-pointer hover:scale-[1.02] ${LEVEL_HOVER_CLASS[problem.level]}` : ''
+        isAvailable && !contestEnded ? `cursor-pointer hover:scale-[1.02] ${LEVEL_HOVER_CLASS[problem.level]}` : ''
       }`}
-      style={isAvailable && !challengeLocked ? { animation: levelAvailableAnimation(problem.level) } : undefined}
-      onClick={isAvailable ? onClaim : undefined}
+      style={isAvailable && !challengeLocked && !contestEnded ? { animation: levelAvailableAnimation(problem.level) } : undefined}
+      onClick={isAvailable && !contestEnded ? onClaim : undefined}
     >
       <div className="p-4 space-y-3">
         {/* Header */}
@@ -100,7 +101,7 @@ export default function ProblemCard({ problem, profile, mySubmission, acceptedBy
 
         {/* Status row */}
         <div className="pt-2 border-t border-gray-800/80">
-          <StatusRow state={state} onWork={onWork} level={problem.level} />
+          <StatusRow state={state} onWork={onWork} level={problem.level} contestEnded={contestEnded} />
         </div>
 
         {/* Catatan panitia — tampil setelah soal dinilai (diterima/ditolak) */}
@@ -124,9 +125,20 @@ export default function ProblemCard({ problem, profile, mySubmission, acceptedBy
   )
 }
 
-function StatusRow({ state, onWork, level }: { state: CardState; onWork: () => void; level: Level }) {
+function StatusRow({ state, onWork, level, contestEnded }: { state: CardState; onWork: () => void; level: Level; contestEnded?: boolean }) {
   if (state.kind === 'available') {
     const challengeLocked = level === 'super' && state.previouslyRejected
+    if (contestEnded) {
+      return (
+        <div className="flex items-center justify-between">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border text-gray-500 bg-gray-500/10 border-gray-500/25">
+            <Lock className="w-3 h-3" />
+            Kompetisi Selesai
+          </span>
+          <span className="text-xs text-gray-700">klik untuk baca</span>
+        </div>
+      )
+    }
     return (
       <div className="flex items-center justify-between">
         <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${
