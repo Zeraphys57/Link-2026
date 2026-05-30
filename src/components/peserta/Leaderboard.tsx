@@ -74,13 +74,16 @@ export default function Leaderboard({ problems, submissions }: Props) {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2.5 mb-6">
-        <Trophy className="w-4 h-4 text-yellow-500" />
-        <h2 className="text-sm font-bold text-gray-200 tracking-wide">Papan Skor</h2>
-        <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs text-emerald-400 font-medium">Live</span>
+      <div className="flex items-center justify-between gap-2.5 mb-6 flex-wrap">
+        <div className="flex items-center gap-2.5">
+          <Trophy className="w-4 h-4 text-yellow-500" />
+          <h2 className="text-sm font-bold text-gray-200 tracking-wide">Papan Skor</h2>
+          <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-xs text-emerald-400 font-medium">Live</span>
+          </div>
         </div>
+        <span className="text-xs text-gray-600">Tekan kartu tim untuk lihat detail submission</span>
       </div>
 
       {entries.map((entry, i) => {
