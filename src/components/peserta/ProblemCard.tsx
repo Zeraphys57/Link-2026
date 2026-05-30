@@ -71,10 +71,10 @@ export default function ProblemCard({ problem, profile, mySubmission, acceptedBy
   return (
     <div
       className={`relative ${bgClass} border ${baseBorder} ${ringClass} rounded-xl overflow-hidden transition-all duration-250 ${
-        isAvailable && !contestEnded ? `cursor-pointer hover:scale-[1.02] ${LEVEL_HOVER_CLASS[problem.level]}` : ''
+        isAvailable ? `cursor-pointer ${!contestEnded ? `hover:scale-[1.02] ${LEVEL_HOVER_CLASS[problem.level]}` : 'hover:brightness-110'}` : ''
       }`}
       style={isAvailable && !challengeLocked && !contestEnded ? { animation: levelAvailableAnimation(problem.level) } : undefined}
-      onClick={isAvailable && !contestEnded ? onClaim : undefined}
+      onClick={isAvailable ? onClaim : undefined}
     >
       <div className="p-4 space-y-3">
         {/* Header */}
@@ -190,7 +190,7 @@ function StatusRow({ state, onWork, level, contestEnded }: { state: CardState; o
             onClick={(e) => { e.stopPropagation(); onWork() }}
             className="group w-full text-xs bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white py-1.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-1"
           >
-            Kerjakan
+            {contestEnded ? 'Lihat Jawaban' : 'Kerjakan'}
             <span className="inline-block transition-transform duration-150 group-hover:translate-x-0.5">→</span>
           </button>
         )}
