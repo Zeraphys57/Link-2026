@@ -2,9 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, LogIn } from 'lucide-react'
+import { Eye, EyeOff, LogIn, PlayCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
+
+const DEMO_ACCOUNTS = {
+  peserta: { email: 'devez@link2026.team', password: '1328513181', name: 'Dev C++ ez' },
+  panitia: { email: 'bryanjacquellino5757@gmail.com', password: 'panitiaLink2026!', name: 'Bryan' },
+}
 
 type LoginMode = 'tim' | 'panitia'
 
@@ -14,6 +19,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [demoLoading, setDemoLoading] = useState<'peserta' | 'panitia' | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -69,6 +75,31 @@ export default function LoginForm() {
 
     toast.dismiss('login-help')
     toast.success(`Selamat datang, ${profile?.display_name ?? 'User'}!`)
+    router.push(profile?.role === 'panitia' ? '/panitia' : '/peserta')
+    router.refresh()
+  }
+
+  const handleDemoLogin = async (type: 'peserta' | 'panitia') => {
+    setDemoLoading(type)
+    const supabase = createClient()
+    const { email, password, name } = DEMO_ACCOUNTS[type]
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (error) {
+      toast.error('Demo login gagal, coba lagi.')
+      setDemoLoading(null)
+      return
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .single()
+
+    toast.dismiss('login-help')
+    toast.success(`Demo: masuk sebagai ${name}`)
     router.push(profile?.role === 'panitia' ? '/panitia' : '/peserta')
     router.refresh()
   }
@@ -162,6 +193,48 @@ export default function LoginForm() {
           )}
         </button>
       </form>
+
+      <div className="mt-6">
+        <div className="relative flex items-center gap-3">
+          <div className="flex-1 h-px bg-gray-700" />
+          <span className="text-xs text-gray-500">atau coba demo</span>
+          <div className="flex-1 h-px bg-gray-700" />
+        </div>
+        <div className="grid grid-cols-2 gap-2 mt-3">
+          <button
+            type="button"
+            onClick={() => handleDemoLogin('peserta')}
+            disabled={!!demoLoading || loading}
+            className="flex items-center justify-center gap-1.5 border border-gray-700 hover:border-amber-600 hover:text-amber-400 text-gray-300 text-sm font-medium py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {demoLoading === 'peserta' ? (
+              <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            ) : (
+              <PlayCircle className="w-3.5 h-3.5" />
+            )}
+            Demo Peserta
+          </button>
+          <button
+            type="button"
+            onClick={() => handleDemoLogin('panitia')}
+            disabled={!!demoLoading || loading}
+            className="flex items-center justify-center gap-1.5 border border-gray-700 hover:border-amber-600 hover:text-amber-400 text-gray-300 text-sm font-medium py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {demoLoading === 'panitia' ? (
+              <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            ) : (
+              <PlayCircle className="w-3.5 h-3.5" />
+            )}
+            Demo Panitia
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
